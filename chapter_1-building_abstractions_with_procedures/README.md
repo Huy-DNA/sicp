@@ -86,3 +86,72 @@
 - The evaluation rule is recursive in nature: Evaluating an expression requires evaluating its subexpressions.
 
 - Tree accumulation.
+
+- Syntactic sugar: Special syntax forms that are convenient alternative _surface_ structures for things that can be written in _more uniform_ ways.
+
+- Lisp programmers are less concerned with matters of syntax because Lisp is flexible to change surface syntax.
+
+- Many convenient syntactic constructs actually make the language less uniform.
+
+## Compound procedures
+
+- Procedure definition: Another abstraction technique.
+
+```scheme
+(define (<name> <formal parameters)
+  <body>)
+```
+
+- Note that these two are different:
+
+```scheme
+(define x1 2)
+(define (x2) 2)
+```
+
+- `x1` is the name for the value `2` and `x2` is a procedure that returns `2` when calling like this `(x2)`.
+
+## The substitution model for procedure application
+
+> How to evaluate a combination whose operator names a compound procedure?
+
+- *Substitution model*: To apply a compound procedure to its argument, evaluate its procedure with each formal parameter replace by the corresponding argument.
+
+- The substitution model is just a model to visual process application, not enforcing how the interpreter should work.
+
+- There are other elaborate models of how interpreters work.
+
+## Applicative order versus normal order
+
+- Normal-order evaluation: "Fully expand and then reduce" - arguments are not evaluated immediately but being substituted into a procedure body first.
+
+- Applicative-order evaluation: Evaluate the arguments and then apply. Also known as call-by-value order of redex reduction.
+
+- For procedure applications that can be modeled using the substitution model and yield legitimate values, applicative-order evaluation and normal-order evaluation produce the same value.
+
+- Lisp uses applicative-order evaluation because:
+  - Additional efficiency.
+  - Normal-order evaluation becomes unwiedly complicated outside the realm of procedures that can be modeled by substitution.
+
+## Conditional expressions and predicates
+
+- The special form `cond`:
+
+```scheme
+(cond (<p1> <e1>)
+      (<p2> <e2>)
+      ...
+      (<pn> <en>))
+```
+
+- Clause: The pair `(<p> <e>)`.
+  - *Predicate*: The first expression in each pair.
+  - *Consequent expression*: The second epxression in each pair. It can be a sequence of expressions.
+
+- The special form `if`:
+
+```scheme
+(if <predicate> <consequent> <alternative>)
+```
+
+- `<consequent>` and `<alternative>` must be single expressions.
