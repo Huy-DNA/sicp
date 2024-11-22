@@ -1,2 +1,2 @@
 # sicp
-Structure &amp; Interpretation exercise walkthrough
+Structure &amp; Interpretation of computer programs exercise walkthrough
