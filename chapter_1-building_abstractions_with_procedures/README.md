@@ -155,3 +155,17 @@
 ```
 
 - `<consequent>` and `<alternative>` must be single expressions.
+
+## Example: Square roots by Newton's Method
+
+- There's an important difference between mathematical functions and computation procedures: Prcedures must be _effective_.
+
+- Mathematical functions are _declarative_ but procedures are _imperative_.
+  A mathemetical's definition of the square root operation written in a pseudo-Lisp:
+  ```scheme
+  (define (sqrt x)
+    (the y (and (>= y 0)
+                (= (square y) x))))
+  ```
+
+- Compute square roots using Newton's method of successive approximation: [Link](newton_square_root.rkt)
