@@ -169,3 +169,86 @@
   ```
 
 - Compute square roots using Newton's method of successive approximation: [Link](newton_square_root.rkt)
+
+# Procedures and the processes they generate
+
+- Programming = Planning the course of actions to be taken by a process via means of a program.
+
+- Procedure = pattern for the _local evolution_ of a computational process.
+
+- We would like to reason about the _global behavior_ of a procedure thou.
+
+## Linear recursiong and iteration
+
+- A factorial function that generates a _linear recursive_ process:
+  ```scheme
+  (define (factorial n)
+    (if (= n 0)
+      1
+      (* n (factorial (- n 1)))))
+  ```
+
+  This one generates a process like this:
+  ```scheme
+  (factorial 6)
+  (* 6 (factorial 5))
+  (* 6 (* 5 (factorial 4)))
+  (* 6 (* 5 (* 4 (factorial 3))))
+  (* 6 (* 5 (* 4 (* 3 (factorial 2)))))
+  (* 6 (* 5 (* 4 (* 3 (* 2 (factorial 1))))))
+  (* 6 (* 5 (* 4 (* 3 (* 2 (* 1 (factorial 0)))))))
+  (* 6 (* 5 (* 4 (* 3 (* 2 (* 1 1))))))
+  (* 6 (* 5 (* 4 (* 3 (* 2 1)))))
+  (* 6 (* 5 (* 4 (* 3 2))))
+  (* 6 (* 5 (* 4 6)))
+  (* 6 (* 5 24))
+  (* 6 120)
+  720
+  ```
+
+  A shape of expansion followed by contraction:
+  - Expansion builds up a chain of deferred operations.
+  - Contraction occurs as the operations are actually performed.
+  -> A _recursive process_
+
+  There are hidden information inside the interpreter that keeps track of where we are in the process. The amount of information needed to keep track of the process grows linearly with `n`.
+  -> A _linear recursive process_
+
+- A factorial function that generates a _linear iterative_ process:
+  ```scheme
+  (define (factorial n)
+    (define (iter i product)
+      (if (= i 0)
+        product
+        (iter (- i 1) (* product i))))
+    (iter n 1))
+  ```
+
+  This one generates a process like this:
+  ```scheme
+  (factorial 6)
+  (iter 6 1)
+  (iter 5 6)
+  (iter 4 30)
+  (iter 3 120)
+  (iter 2 360)
+  (iter 1 720)
+  (iter 0 720)
+  720
+  ```
+  
+  This one does not grow or shrink.
+  -> An _iterative process_.
+
+  An iterative process's state can be summarized by a fixed number of _state variables_.
+
+  The number of steps grows linearly with `n`.
+  -> A _linear iterative process_.
+
+- A recursive procedure can generate an iterative process.
+
+- C, Ada, Pascal have to resort to looping constructs to desribe iterative processes; Recursive procedures there always have their interpretation consuming resources which grow linearly with the number of procedure calls.
+
+- Scheme is different, it will execute an iterative process in constant space even if it's described a recursive procedure. -> An implementation with this property is called _tail-recursive_.
+
+- In a _tail-recursive_ implementation, special iteration constructs can be considered syntactic sugar.
