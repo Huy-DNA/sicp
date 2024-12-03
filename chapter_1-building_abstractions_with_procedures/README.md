@@ -252,3 +252,47 @@
 - Scheme is different, it will execute an iterative process in constant space even if it's described a recursive procedure. -> An implementation with this property is called _tail-recursive_.
 
 - In a _tail-recursive_ implementation, special iteration constructs can be considered syntactic sugar.
+
+## Tree recursion
+
+- A recursive-process-yielding procedure for calculating the `n`th fibonacci number:
+
+  ```scheme
+  (define (fib n)
+    (cond ((= n 0) 0)
+          ((= n 1) 1)
+          (else (+ (fib (- n 1))
+                   (fib (- n 2))))))
+  ```
+
+  This yields a tree-recursive process.
+  - The steps taken grows linearly with the total number of nodes in the tree (which is exponential with the input).
+  - The space required grows linearly with the depth of the tree.
+  
+  ```scheme
+                                                    (fib 5)
+                            (fib 3)                                             (fib 4)
+                (fib 1)                  (fib 2)                   (fib 2)                     (fib 3)
+                                 (fib 0)         (fib 1)     (fib 0)      (fib 1)      (fib 1)        (fib 2)
+                                                                                                (fib 0) (fib 1)
+  ```
+
+- An interative-process-yielding procedure for calculating the `n`th fibonacci number:
+
+  ```scheme
+  (define (fib n)
+    (define (fib-iter rounds fib-i-2 fib-i-1)
+      (if (= rounds 0)
+        fib-i-1
+        (fib-iter (- rounds 1) fib-i-1 (+ fib-i-1 fib-i-2))))
+    (fib-iter n 1 0))
+  ```
+
+- Although the iterative version is more efficient, the recursive version is more straightforward, allowing for a direct translation to Lisp.
+
+### Example: Counting change
+
+- Problem: How many different ways can we make change of $1.00, given half-dollars, quarters, dimes, nickels, and pennies? More generally, can we write a procedure to compute the number of ways to change any given amount of money?
+
+- See [Link](count_change.rkt)
+
