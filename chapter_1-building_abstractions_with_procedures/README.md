@@ -301,3 +301,9 @@
 - Tree-recursive: Higher inefficient, but easy to specify & understand.
 
   People have proposed one could get the best of both worlds by designing a "smart compiler" that could tranform tree-recursive procedures into more efficient procedures that compute the same result. One approach is _tabulation_ or _memoization_.
+
+## Orders of growth
+
+- The notion of _order of growth_ can be used to obtain a gross measure of the resources required by a process as the inputs become larger.
+
+- Let `n` be a parameter that measures the size of the problem & `R(n)` be the amount of resources the process requires for a problem of size `n`: `R(n)` is said to have order of growth `Θ(f(n))` or `R(n) = Θ(f(n))` if `k1 f(n) <= R(n) <= k2 f(n)` for any sufficiently large value of `n`.
