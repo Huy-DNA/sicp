@@ -296,3 +296,8 @@
 
 - See [Link](count_change.rkt)
 
+- In the above solution, we implement a tree-recursive version. We note that it's not obvious how to design a better algorithm.
+
+- Tree-recursive: Higher inefficient, but easy to specify & understand.
+
+  People have proposed one could get the best of both worlds by designing a "smart compiler" that could tranform tree-recursive procedures into more efficient procedures that compute the same result. One approach is _tabulation_ or _memoization_.
