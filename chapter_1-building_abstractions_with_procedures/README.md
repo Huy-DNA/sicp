@@ -307,3 +307,13 @@
 - The notion of _order of growth_ can be used to obtain a gross measure of the resources required by a process as the inputs become larger.
 
 - Let `n` be a parameter that measures the size of the problem & `R(n)` be the amount of resources the process requires for a problem of size `n`: `R(n)` is said to have order of growth `Θ(f(n))` or `R(n) = Θ(f(n))` if `k1 f(n) <= R(n) <= k2 f(n)` for any sufficiently large value of `n`.
+
+## Exponentiation
+
+- Problem: Compute the exponential of a given number: base `b` and a positive integer exponent `n`.
+
+- Naive idea: [Link](step-by-step-exponentiation.rkt)
+
+  $$b^n = b \cdot b^{n - 1}$$
+
+  $$b^0 = 1$$
