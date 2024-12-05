@@ -312,8 +312,12 @@
 
 - Problem: Compute the exponential of a given number: base `b` and a positive integer exponent `n`.
 
-- Naive idea: [Link](step-by-step-exponentiation.rkt)
+- Naive idea:
 
   $$b^n = b \cdot b^{n - 1}$$
 
   $$b^0 = 1$$
+
+  Linear recursive: [Link](linear-recursive-exponentiation.rkt) - `Θ(n)` steps and `Θ(n)` space.
+
+  Linear iterative: [Link](linear-iterative-exponentiation.rkt) - `Θ(n)` steps and `Θ(1)` space.
