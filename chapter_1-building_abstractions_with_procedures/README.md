@@ -321,3 +321,11 @@
   Linear recursive: [Link](linear-recursive-exponentiation.rkt) - `Θ(n)` steps and `Θ(n)` space.
 
   Linear iterative: [Link](linear-iterative-exponentiation.rkt) - `Θ(n)` steps and `Θ(1)` space.
+
+- Better idea:
+
+  $$b^{n} = (b^{\frac{n}{2}})^2 \text{if n is even}$$
+
+  $$b^{n} = b \cdot (b^{\frac{n - 1}{2}})^2 \text{if n is odd}$$
+
+  Grow logarithmically with `n` in both space and number of steps: [Link](logarithmic-recursive-exponentiation.rkt)
