@@ -329,3 +329,9 @@
   $$b^{n} = b \cdot (b^{\frac{n - 1}{2}})^2 \text{if n is odd}$$
 
   Grow logarithmically with `n` in both space and number of steps: [Link](logarithmic-recursive-exponentiation.rkt)
+
+Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for devising recursive and linear processed-yield procedures:
+
+  - Recursive version: Come up with an induction formula and directly translate it.
+
+  - Linear version: Try to think of an invariant.
