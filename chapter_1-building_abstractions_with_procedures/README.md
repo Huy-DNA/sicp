@@ -335,3 +335,13 @@ Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for 
   - Recursive version: Come up with an induction formula and directly translate it.
 
   - Linear version: Try to think of an invariant.
+
+## Greatest common divisors
+
+- Greatest common divisor of two integers `a` and `b` is the largest integer that divides both `a` and `b` with no remainder.
+
+- Euclid's algorithm: [Link](euclide-algorithm.rkt)
+
+  Idea: If `r <- a mod b` then $GCD(a, b) = GCD(b, r)$.
+
+  According to Lamé's theorem, the order of growth is `Θ(log n)`.
