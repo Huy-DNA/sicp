@@ -412,3 +412,15 @@ Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for 
           ((fermat-test n) (fast-prime n (- times 1)))
           (else false)))
   ```
+
+### Probabilistic methods
+
+- The Fermat test is a probabilistic algorithm - the answer we obtain is probably correct.
+
+- If we run the test enough times, the probability of error can be made as small as we like.
+
+- However, the Fermat test can be fooled: there exist non-prime numbers but `a^n` is congurent to `a` modulo `n` for all integers `a < n` (Carmichael number). These numbers are extemely rare to the point that "in testing primality of very large numbers chosen at random, the chance of stumbling upon a value that fools the Fermat test is less than the chance that cosmic radiation will cause the computer to make an error in carrying out a “correct” algorithm".
+
+- There are variations of the Fermat test that cannot be fooled.
+
+- _Probabilitic algorithm_: One that the chance of error can be proved to become arbitrarily small.
