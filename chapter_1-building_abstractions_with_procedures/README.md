@@ -345,3 +345,70 @@ Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for 
   Idea: If `r <- a mod b` then $GCD(a, b) = GCD(b, r)$.
 
   According to Lamé's theorem, the order of growth is `Θ(log n)`.
+
+## Example: Testing for primality
+
+### Searching for divisors
+
+- Searching from `1` to `sqrt(n)` for a divisor of `n`:
+
+  ```scheme
+  (define (divides? a b) (= (remainder b a) 0))
+
+  (define (prime? n)
+    (define (find-divisor start-divisor)
+        (cond ((> (* start-divisor start-divisor) n) n)
+              ((divides? start-divisor n) start-divisor)
+              (else (find-divisor (+ start-divisor 1)))))
+    (= (find-divisor 2) n))
+  ```
+
+- An iterative process with `Θ(sqrt(n))` order of growth.
+
+### The Fermat test
+
+- The Fermat test is a `Θ(log n)` primality test, which is basd on the Fermat's Little Theorem:
+
+  > If `n` is a prime number and `a` is any positive integer less than `n`, then `a` raised to the nth power is congruent to a modulo `n`.
+
+- Idea: If `n` is not prime, then, in general, most of the numbers `a < n` will not satisfy the above relation.
+
+- Algorithm: Given a number `n`, we repeatedly pick a random number `a < n`:
+  - Compute the remainder of `a^n modulo n`.
+  - If it is not equal to `a`, then `n` is certainly not prime.
+  - If it is `a`, then there is a high chance that `n` is prime.
+  -> By trying more and more values of `a`, we can be more confident in the result.
+
+- The exponentiation (modulo a base) algorithm is similar to the exponentiation algorithm introduced in the previous section, which is `Θ(log n)`.
+
+  ```scheme
+  (define (fast-exp base exp n)
+    (define (exp-iter i)
+      (cond ((= i 0) 1)
+            ((even? i) (remainder
+                        (square (exp-iter (/ i 2)))
+                        n))
+            (else (remainder
+                   (* base
+                      (square (exp-iter (/ (- i 1) 2))))
+                   2))))
+    (exp-iter exp))
+  ```
+
+  Assume that `random` is a primitive procedure:
+
+  ```scheme
+  (define (fermat-test n)
+    (= n
+       (fast-exp (+ 1
+                    (random (- n 1)))
+                 n
+                 n)))
+  ```
+
+  ```scheme
+  (define (fast-prime n times)
+    (cond ((= times 0) true)
+          ((fermat-test n) (fast-prime n (- times 1)))
+          (else false)))
+  ```
