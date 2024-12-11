@@ -424,3 +424,84 @@ Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for 
 - There are variations of the Fermat test that cannot be fooled.
 
 - _Probabilitic algorithm_: One that the chance of error can be proved to become arbitrarily small.
+
+# Formulating abstractions with higher-order procedure
+
+- Procedures are abstractions that describe operations on parameters that are independent from particular arguments.
+
+- Without procedures, we're forced to always work with the primitive operations of a language.
+
+```scheme
+(define (cube x) (* x x x))
+; vs
+(* 3 3 3)
+(* x x x)
+(* y y y)
+```
+
+- Often we need to repeat the same programming pattern many times - procedures that manipulate other procedures or _higher-order procedures_ can help express a programming pattern.
+
+## Procedures as arguments
+
+- Example 1: Sum of integers from a to b.
+
+```scheme
+(define (sum-integers a b)
+  (if (> a b)
+    0
+    (+ a (sum-integers (+ a 1) b))))
+```
+
+- Example 2: Sum of cubes of integers from a to b.
+
+```scheme
+(define (sum-integers a b)
+  (if (> a b)
+    0
+    (+ (cube a)
+       (sum-integers (+ a 1) b))))
+```
+
+- Example 3: Sum of a sequence of terms in the series - $\frac{1}{n \cdot (n+2)}, n \ge 1$, which coverges to $\pi / 8$.
+
+```scheme
+(define (pi-sum a b)
+  (if (> a b)
+    0
+    (+ (/ 1.0 (* a (+ a 2)))
+       (pi-sum (+ a 4) b))))
+```
+
+- These 3 share a common programming patterns:
+
+  ```scheme
+  (define (⟨name⟩ a b)
+    (if (> a b)
+      0
+      (+ (⟨term⟩ a)
+         (⟨name⟩ (⟨next⟩ a) b))))
+  ```
+
+  -> An indication that some useful abstraction awaits.
+
+- Higher-order procedure example:
+
+  ```scheme
+  (define (sum term a next b)
+    (if (> a b)
+      0
+      (+ (term a)
+         (sum (next a) b))))
+  ```
+
+- Integral can be built on top of `sum`, we just have to pass a function that slowly increments `a` to `next`:
+
+  $$\int_a^b f(x) \, dx = \left[ f\left(a + \frac{\Delta x}{2}\right) + f\left(a + \Delta x + \frac{\Delta x}{2}\right) + f\left(a + 2\Delta x + \frac{\Delta x}{2}\right) + \cdots \right] \Delta x$$
+
+  ```scheme
+  (define (integral f a b dx)
+    (define (add-dx x)
+      (+ x dx))
+    (* (sum f a add-dx b)
+       dx))
+  ```
