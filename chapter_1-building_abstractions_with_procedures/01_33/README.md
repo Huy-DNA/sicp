@@ -2,13 +2,36 @@
 
 You can obtain an even more general version of `accumulate` (Exercise 1.32) by introducing the notion of a `filter` on the terms to be combined. That is, combine only those terms derived from values in the range that satisfy a specified condition. The resulting `filtered-accumulate` abstraction takes the same arguments as `accumulate`, together with an additional predicate of one argument that specifies the filter.
 
-Write filtered-accumulate as a procedure. Show how to express the following using filtered-accumulate:
-a. the sum of the squares of the prime numbers in the interval a to b (assuming that you have a `prime?` predicate already written)
+Write `filtered-accumulate` as a procedure. Show how to express the following using filtered-accumulate:
+a. the sum of the squares of the prime numbers in the interval a to b (assuming that you have a `prime?` predicate already written).
 b. the product of all the positive integers less than n that are relatively prime to n (i.e., all positive integers i < n such that GCD(i, n) = 1).
 
 # Answer
 
-Remarks:
+```scheme
+(define (filtered-accumulate combiner null-value filter term a next b)
+  (define (accumulate-iter c)
+    (define term-c (term c))
+    (cond ((> c b) null-value)
+          ((not (filter term-c)) (accumulate-iter (next c)))
+          (else (combiner (term c)
+                          (accumulate-iter (next c))))))
+  (accumulate-iter a))
+```
+
+a. Sum of the squares of the prime numbers in the interval a to b:
+
+   ```scheme
+   (filtered-accumulate + 0 prime? square a inc b)
+   ```
+
+b. Product of all positive integers less than n that are relatively prime to n:
+
+   ```scheme
+   (filtered-accumulate * 1 co-prime-with-n square 1 inc n)
+   ```
+
+# Remarks
 
 - The abstraction get generalized & more powerful each time.
 
