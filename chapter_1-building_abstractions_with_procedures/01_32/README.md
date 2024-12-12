@@ -10,9 +10,34 @@ a. Show that `sum` and `product` (Exercise 1.31) are both special cases of a sti
 
 Write `accumulate` and show how `sum` and `product` can both be defined as simple calls to accumulate.
 
-b. If your `accumulate` procedure generates a recursive process, write one that generates an iterative process. If it generates an iterative process, write one that gen- erates a recursive process.
+b. If your `accumulate` procedure generates a recursive process, write one that generates an iterative process. If it generates an iterative process, write one that generates a recursive process.
 
 # Answer
+
+- Linear recursive version:
+
+  ```scheme
+  ; similar to fold-right
+  (define (accumulate combiner null-value term a next b)
+    (define (accumulate-iter c)
+      (if (> c b)
+        null-value
+        (combiner (term c)
+                  (accumulate-iter (next c)))))
+    (accumulate-iter a))
+  ```
+
+- Linear iterative version:
+
+  ```scheme
+  ; similar to fold-left
+  (define (accumulate combiner null-value term a next b)
+    (define (accumulate-iter c result)
+      (if (> c b)
+        result
+        (accumulate-iter (next c) (combiner result (term c)))))
+    (accumulate-iter a null-value))
+  ```
 
 # Related exercises
 
