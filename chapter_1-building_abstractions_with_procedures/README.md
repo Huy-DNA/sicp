@@ -472,7 +472,7 @@ Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for 
        (pi-sum (+ a 4) b))))
 ```
 
-- These 3 share a common programming patterns:
+- These 3 share a common programming pattern:
 
   ```scheme
   (define (⟨name⟩ a b)
