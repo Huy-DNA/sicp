@@ -491,7 +491,7 @@ Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for 
     (if (> a b)
       0
       (+ (term a)
-         (sum (next a) b))))
+         (sum term (next a) next b))))
   ```
 
 - Integral can be built on top of `sum`, we just have to pass a function that slowly increments `a` to `next`:
