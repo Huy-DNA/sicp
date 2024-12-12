@@ -505,3 +505,5 @@ Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for 
     (* (sum f a add-dx b)
        dx))
   ```
+
+- Exercises remarks: [Exercise 1.33](/chapter_1-building_abstractions_with_procedures/01_33/README.md)
