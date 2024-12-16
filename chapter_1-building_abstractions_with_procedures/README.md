@@ -507,3 +507,51 @@ Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for 
   ```
 
 - Exercises remarks: [Exercise 1.33](/chapter_1-building_abstractions_with_procedures/01_33/README.md)
+
+## Constructing procedures using `lambda`
+
+- It's sometimes more convenient to have a way to directly specify "the procedure that returns this..." without having to give it a name.
+
+- The `lambda` special form:
+
+  ```scheme
+  (lambda (<formal-parameters>) <body>)
+  ```
+
+### Using `let` to create local variables
+
+- We often need local variables in our procedures other than those that have been bound as formal parameters.
+
+- We can use a `lambda` expression to specify an **anonymous procedure** for binding our local variables:
+
+  ```scheme
+  (define (f x y)         ; formal parameters `x` and `y`
+    ((lambda (a b)        ; define local variables `a` and `b`
+       (+ x y a b)) 1 2)) ; bind `a` and `b` to `1` and `2`
+  ```
+
+- The `let` special form is used to express this useful construct. The above example translates to:
+
+  ```scheme
+  (define (f x y)
+    (let ((a 1)
+          (b 2))
+      (+ x y a b)))
+  ```
+
+- The general form of a `let` expression:
+
+  ```scheme
+  (let ((<var1> <exp1>)
+        (<var2> <exp2>)
+        ...
+        (<varn> <expn>))
+    <body>)
+  ```
+
+  The `let` expression is a syntactic sugar for the underlying `lambda` application. Implications:
+
+  - The scope of a variable specified by a `let` expression is the body of the `let`.
+  - The variables’ values are computed outside the `let`.
+
+- `define` can also be used but it's more preferred for internal procedures.
