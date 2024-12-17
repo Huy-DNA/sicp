@@ -555,3 +555,18 @@ Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for 
   - The variables’ values are computed outside the `let`.
 
 - `define` can also be used but it's more preferred for internal procedures.
+
+## Procedures as general methods
+
+### Finding roots of equations by the half-interval method
+
+- A technique for finding roots of an equation $f(x) = 0$ where $f$ is continuous.
+
+- Idea:
+  - If $f(a) < 0 < f(b)$, then $f(x0) = 0$ for some $x0$ between $a$ and $b$.
+  - Narrow down the range $a$ and $b$ by taking the mean $m$ of $a$ and $b$. If $f(m) > 0$ then $a <- a$, $b <- m$, else $a <- m$, $b <- b$.
+  - When the interval is small enough, we can stop.
+
+- Complexity: `Θ(log(L/T))`
+  - `L` is the length of the original interval.
+  - `T` is the error tolerance.
