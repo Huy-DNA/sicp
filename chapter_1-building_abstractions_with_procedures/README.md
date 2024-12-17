@@ -570,3 +570,22 @@ Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for 
 - Complexity: `Θ(log(L/T))`
   - `L` is the length of the original interval.
   - `T` is the error tolerance.
+
+- Code: [Link](half-interval-method.rkt)
+
+### Finding fixed points of functions
+
+- A number `x` is called a fixed point of a function `f` if $f(x) = x$.
+
+- Idea: For some functions `f`, we can locate a fixed point by:
+  - Begin with an initial guess.
+  - Apply `f`.
+  - Stop if the value doesn't change very much.
+
+- Code: [Link](fixed-point.rkt)
+
+- We can think of finding square roots as finding fixed points.
+  - Assume that `y` is the square root of `x`. Therefore, $y^2 = x$, or $y = x / y$. Thus, the square root of `x` is the fixed point of the function $f(t) = x / t$.
+  - However, this search does not converge: If $t1 = f(t0) = x / t0$, then $t2 = f(t1) = x / t1 = t0$.
+  - **Average damping**: A technique that often aids the convergence of fixed-point searches.
+    Instead of `y -> x/y`, we take `y -> (y + x/y) / 2`.
