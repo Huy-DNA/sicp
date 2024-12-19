@@ -589,3 +589,80 @@ Remark: From the exercises 1.16 to 1.18, I have formed 2 thought frameworks for 
   - However, this search does not converge: If $t1 = f(t0) = x / t0$, then $t2 = f(t1) = x / t1 = t0$.
   - **Average damping**: A technique that often aids the convergence of fixed-point searches.
     Instead of `y -> x/y`, we take `y -> (y + x/y) / 2`.
+
+## Procedures as returned values
+
+- We can achieve more expressive power via the capability to return functions as values. For example, we can express the idea of **average damping** as follows:
+
+  ```scheme
+  (define (average-damp f)
+    (lambda (x) (average x (f x))))
+  ```
+
+- Using `average-damp`, we can express `sqrt` as follows:
+
+  ```scheme
+  (define (sqrt x)
+    (fixed-point (average-damp (lambda (y) (/ x y))
+                 1.0)))
+  ```
+
+  Three ideas are made clear: fixed-point search, average damping, and the function y -> x/y.
+
+  -> The idea becomes clearer & we can also readily model other functions, such as `cube-root`, which calculates the cube root of a number:
+
+  ```scheme
+  (define (cube-root x)
+    (fixed-point (average-damp (lambda (y) (/ x (square y))))
+                 1.0))
+  ```
+
+- Side note: Why Newton's method?
+  - Why not just compute the fixed point of `x - g(x)`? The answer (I think) should be the speed of convergence.
+  - Why not use the half-interval method to compute the solution to `g(x) = 0`? The answer is also the speed of convergence, and the half-interval method also requires you to find to 2 points where `g` produces differently-signed results.
+  - Newton’s method does not always converge to an answer. Though, it can be shown in favorable cases each iteration doubles the number-of-digits accuracy of the approximation to the solution.
+
+### General Newton's method
+
+- To estimate the solution to `g(x) = 0`, where `g` is differentiable, we can estimate the fixed point of `x - g(x)/Dg(x)`.
+
+- Estimate the derivative of `g` at `x`:
+
+  ```scheme
+  (define (deriv g)
+    (define dx 0.00001)
+    (lambda (x) (/ (- (g (+ x dx)) (g x))
+                   dx)))
+  ```
+
+- General Newton's method:
+
+  ```scheme
+  (define (newtons-method g guess)
+    (define (transformed-g x) (- x (/ (g x) ((deriv g) x))))
+    (fixed-point (average-damp transformed-g)
+                 guess))
+  ```
+
+- Another `sqrt`:
+
+  ```scheme
+  (define (sqrt x)
+    (newtons-method (lambda (y) (- (* y y) x))
+                    1.0))
+  ```
+
+### Abstractions and first-class procedures
+
+- We can see that `sqrt` has many ways to be expressed, using different sets of compound procedures.
+
+- Programmers should be alert to identify opportunities for abstractions. However, one should not always write programs in the most abstract way. -> Choose the right level of abstraction. It's important to be able to think in terms of these abstractions.
+
+- In general, programming languages impose restrictions on the ways in which computational elements can be manipulated.
+  -> Elements with the fewest restrictions are said to have **first-class status**.
+
+- Some of the “rights and privileges” of first-class elements are:
+  - They may be named by variables.
+  - They may be passed as arguments to procedures.
+  - They may be returned as the results of procedures.
+  - They may be included in data structures.
