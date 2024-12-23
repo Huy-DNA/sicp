@@ -22,3 +22,15 @@
   - The choice of data representation can have significant impact on the time and space requirements of processes that manipulate the data.
   - *Generic operations* - Operations that must handle many different types of data/representations of data.
   - *Data-directed programming* - Allow individual data representation to be designed in isolation and combined *additively* (without modification).
+
+## Introduction to data abstraction
+
+- Procedure:
+  - The details of how the procedure was implemented could be suppressed.
+  - The particular procedure itself could be replaced by any other procedures with the same overall behavior.
+  -> The analogous notion for compound data is called *data abstraction*.
+
+- Basic ideas of *data abstraction*:
+  - Structure the programs that are to use compound data objects so that they operate on "abstract data" or the programs should make no assumptions about the data.
+  - A *concrete data representation* is defined independent of the programs that use the data.
+  - The interface between these 2 parts of our system will be a set of procedures, called *selectors* and *constructors*, which implement the abstract data in terms of the concret representation.
