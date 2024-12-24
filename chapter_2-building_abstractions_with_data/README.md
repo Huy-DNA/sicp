@@ -35,4 +35,93 @@
   - A *concrete data representation* is defined independently of the programs that use the data.
   - The interface between these 2 parts of our system will be a set of procedures, called *selectors* and *constructors*, which implement the abstract data in terms of the concret representation.
 
+## Example: Arithmetic operations for rational numbers
 
+- Wishful thinking - The operations on abstract data:
+  - `(make-rat <n> <d>)` returns the rational number whose numerator is `<n>` and denominator is `<d>`.
+  - `(numer <x>)` returns the numerator of the rational number `<x>`.
+  - `(denom <x>)` returns the denominator of the rational number `<x>`.
+
+- Given these operations, we can implement arithmetic operations using this abstract model of rational numbers:
+
+  ```scheme
+  (define (add-rat r1 r2)
+    (make-rat (+ (* (numer r1) (denom r2))
+                 (* (numer r2) (denom r1)))
+              (* (denom r1) (denom r2))))
+
+  (define (sub-rat r1 r2)
+    (make-rat (- (* (numer r1) (denom r2))
+                 (* (numer r2) (denom r1)))
+              (* (denom r1) (denom r2))))
+
+  (define (mul-rat r1 r2)
+    (make-rat (* (numer r1) (numer r2))
+              (* (denom r1) (denom r2))))
+
+  (define (div-rat r1 r2)
+    (make-rat (* (numer r1) (denom r2))
+              (* (denom r1) (numer r2))))
+
+  (define (equal-rat? r1 r2)
+    (= (* (numer r1) (denom r2))
+       (* (numer r2) (denom r1))))
+  ```
+
+### Pairs
+
+- Pairs enable us to implement the concrete level of the data abstraction.
+
+- Later, pairs can be shown to be able to be built from procedures alone.
+
+- Operations on pairs:
+
+  ```scheme
+  (cons <x> <y>)   ; construct a pair with `<x>` as the first element, `<y>` as the second
+  (car <p>)        ; extract the first element of a pair `<p>`
+  (cdr <p>)        ; extract the second element of a pair `<p>`
+  ```
+
+- A pair data object can be given a name and manipulated like a primitive data object.
+
+  ```scheme
+  > (define x (cons 1 2))
+  > (car x)
+  1
+  > (cdr x)
+  2
+  ```
+
+- Closure property: A pair can be constructed upon elements which are pairs itself.
+
+  ```scheme
+  > (define x (cons 1 2))
+  > (define y (cons 3 4))
+  > (define z (cons x y))
+  > (car (car z))
+  1
+  > (car (cdr z))
+  3
+  ```
+
+  -> Pairs can be used a general-purpose building blocks.
+
+- *List-structured data*: Data constructed from pairs.
+
+### Representing rational numbers
+
+- We can represent a rational number as a pair of numerator and denominator:
+
+  ```scheme
+  (define (make-rat n d) (cons n d))
+  (define (numer r) (car r))
+  (define (denom r) (cdr r))
+  ```
+
+- This rational-number implementation does not reduce rational numbers to lowest terms.
+  
+  ```scheme
+  (define (make-rat n d)
+    (let ((g (gcd n d)))
+      (cons (/ n g) (/ d g))))
+  ```
