@@ -32,5 +32,7 @@
 
 - Basic ideas of *data abstraction*:
   - Structure the programs that are to use compound data objects so that they operate on "abstract data" or the programs should make no assumptions about the data.
-  - A *concrete data representation* is defined independent of the programs that use the data.
+  - A *concrete data representation* is defined independently of the programs that use the data.
   - The interface between these 2 parts of our system will be a set of procedures, called *selectors* and *constructors*, which implement the abstract data in terms of the concret representation.
+
+
