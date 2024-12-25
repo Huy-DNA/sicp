@@ -125,3 +125,27 @@
     (let ((g (gcd n d)))
       (cons (/ n g) (/ d g))))
   ```
+
+## Abstraction barriers
+
+- The underlying idea of data abstractions:
+  - Identify a basic set of operations to work on the data objects.
+  - This basic set of operations fuels all the possible interactions with the data objects.
+  - Use only this set of operations on the data objects.
+
+  -> Independent of the underlying representations.
+
+- Example: Each of the horizontal lines is an *abstraction barrier*.
+
+  ```
+    -------[ Programs that use rational numbers ]-------
+            Rational numbers in problem domain
+    -------[ add-rat    sub-rat   ... ]-------
+        Rational numbers as numerators and denominators
+    -------[ make-rat   numer   denom ]-------
+             Rational numbers as pairs
+    -------[ make-rat   numer   denom ]-------
+          However pairs as implemented
+  ```
+
+- Advantages: Make program easier to maintain and modify.
