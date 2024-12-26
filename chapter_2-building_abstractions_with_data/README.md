@@ -149,3 +149,55 @@
   ```
 
 - Advantages: Make program easier to maintain and modify.
+
+## What is meant by data?
+
+- We implemented rationals using `make-rat` (constructor) and `numer` and `denom` (selectors).
+
+- But it's not enough to say that a rational is whatever implemented by `make-rat` and `numer` and `denom`.
+
+  We need to guarantee that if we construct a rational number `x` from a pair of integers `n` and `d` then extracting the `numer` and `denom` of `x` and dividing them should yield the same result as dividing `n` by `d`.
+
+  -> `make-rat` and `numer` and `denom` must satisfy a set of conditions. In this case, if `x` is `(make-rat n d)` then
+
+    $$
+        \frac{(numer x)}{(denom x)} = \frac{n}{d}
+    $$
+
+- Data = A collection of constructors and selectors + A collection of conditions.
+
+### Pair (another perspective)
+
+- We can think of pair as:
+
+  - A collection of constructors and selectors:
+
+    ```scheme
+    (cons first second)  ; construct a pair with `first` and `second`
+    (car pair)           ; select the first element of a pair
+    (cdr pair)           ; select the second element of a pair
+    ```
+  
+  - A collection of conditions:
+
+    ```scheme
+    (car (cons first second))  ; should be `first`
+    (cdr (cons first second))  ; should be `second`
+    ```
+- An implementation of `pair` (out of procedures alone):
+
+  ```scheme
+  (define (cons first second)
+    (define (dispatch m)
+      (cond ((= m 0) first)
+            ((= m 1) second)
+            (else (error "Argument not 0 or 1: CONS" m))))
+    dispatch)
+
+  (define (car z) (z 0))
+  (define (cdr z) (z 1))
+  ```
+
+  -> It's possible to to have a procedural representation of pairs.
+
+  -> This style is called "message passing".
