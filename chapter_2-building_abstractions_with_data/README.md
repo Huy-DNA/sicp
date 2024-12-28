@@ -229,3 +229,5 @@
         (make-interval (/ 1.0 (upper-bound y))
                        (/ 1.0 (lower-bound y)))))
   ```
+
+- Relate exercises: See 2.7 - 2.16
