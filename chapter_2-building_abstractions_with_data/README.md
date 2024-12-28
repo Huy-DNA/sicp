@@ -233,3 +233,71 @@
 - There's a bug in `div-interval` procedure, in that in actuality, dividing by an interval that spans `0` doesn't result in an interval!
 
 - Relate exercises: See 2.7 - 2.16
+
+## Hierarchical data and the closure property
+
+- Pairs can be visualized using the *box-and-pointer* notation:
+
+  - Each object is a *pointer* to a box.
+  - A box for a primitive object contains a representation of the object.
+
+  A box can be another pair. -> The *closure property*.
+
+- *Closure property*: The property of a data combination operation in which the result of such operation can be themselves combined using that same operation.
+
+  -> Permit us to create *hierarchical* structures - structures that are made of parts, which are made up parts, and so on.
+
+### Representing sequences
+
+- Sequences can be represented using pairs.
+
+- List: Nested `cons`es.
+
+  ```scheme
+  (cons <a1>
+  (cons <a2>
+      (cons <a3>
+      (cons <a4>
+          (...
+          (cons <an> nil>)...)))))
+  ```
+
+- The `list` primitive:
+
+  ```scheme
+  (list <a1> <a2> ... <an>)
+  ```
+
+#### List operations
+
+- The procedure `list-ref` takes as arguments a list and a number `n` and returns the `n`th item of the list:
+
+  - For `n = 0`, `list-ref` should return the `car` of the list.
+  - Otherwise, `list-ref` should return the `(n-1)`st item of the `cdr` of the list.
+
+  ```scheme
+  (define (list-ref list n)
+    (if (= n 0)
+        (car list)
+        (list-ref (cdr list) (- n 1)))
+  ```
+
+- The procedure `length` returns the length of a list.
+
+  ```scheme
+  (define (length list)
+    (if (null? list)
+      0
+      (+ 1 (length (cdr list)))))
+  ```
+
+- The procedure `append` takes two lists as arguments and combines their elements to make a new list:
+
+  ```scheme
+  (define (append l1 l2)
+    (if (null? l1)
+      l2
+      (cons (car l1) (append (cdr l1) l2))))
+  ```
+
+  Technique: `cons`-up the answer list & `cdr`-down a list.
