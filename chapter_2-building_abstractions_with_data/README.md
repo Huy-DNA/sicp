@@ -230,4 +230,6 @@
                        (/ 1.0 (lower-bound y)))))
   ```
 
+- There's a bug in `div-interval` procedure, in that in actuality, dividing by an interval that spans `0` doesn't result in an interval!
+
 - Relate exercises: See 2.7 - 2.16
