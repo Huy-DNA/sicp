@@ -10,7 +10,7 @@ the procedure `f` can be called with two or more arguments. If we evaluate `(f 1
 
 Given the definition `(define (g . w) ⟨body⟩)` the procedure `g` can be called with zero or more arguments. If we evaluate `(g 1 2 3 4 5 6)` then in the body of `g`, `w` will be the list `(1 2 3 4 5 6)`.
 
-Use this notation to write a procedure same-parity that takes one or more integers and returns a list of all the arguments that have the same even-odd parity as the first argument. For example,
+Use this notation to write a procedure `same-parity` that takes one or more integers and returns a list of all the arguments that have the same even-odd parity as the first argument. For example,
 
 ```scheme
 (same-parity 1 2 3 4 5 6 7) (1 3 5 7)
@@ -19,3 +19,5 @@ Use this notation to write a procedure same-parity that takes one or more intege
 ```
 
 # Answer
+
+See `main.rkt`.
