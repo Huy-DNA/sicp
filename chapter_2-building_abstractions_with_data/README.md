@@ -301,3 +301,19 @@
   ```
 
   Technique: `cons`-up the answer list & `cdr`-down a list.
+
+#### Mapping over lists
+
+- Mapping: The operation of applying some transformation to each element in a list and generate the list of results.
+
+  ```scheme
+  (define (map proc items)
+    (if (null? items)
+      null
+      (cons (proc (car items))
+            (map proc (cdr items)))))
+  ```
+
+- Map is a very important construct:
+  - Capture a common patten.
+  - A higher level of abstraction in dealing with lists.
