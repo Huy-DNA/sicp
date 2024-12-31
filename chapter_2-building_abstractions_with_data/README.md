@@ -317,3 +317,19 @@
 - Map is a very important construct:
   - Capture a common patten.
   - A higher level of abstraction in dealing with lists.
+
+## Hierachical structures
+
+- Tree: Sequence whose elements are sequences.
+  - Branch: The element of the sequence.
+  - Subtree: The element that are themselves sequences.
+
+- Recursion is a natural tool for dealing with tree structures.
+
+  ```scheme
+  (define (count-leaves t)
+    (cond ((null? t) 0)
+          ((not (pair? t)) 1)
+          (else (+ (count-leaves (car x))
+                   (count-leaves (cdr x))))))
+  ```
