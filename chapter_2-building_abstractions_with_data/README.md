@@ -333,3 +333,114 @@
           (else (+ (count-leaves (car x))
                    (count-leaves (cdr x))))))
   ```
+
+## Sequences as conventional interfaces
+
+- *Conventional interfaces* is a powerful design principle for working with data structures.
+
+- Consider the following 2 procedures:
+ 
+  ```scheme
+  (define (sum-odd-squares tree)
+    (cond ((null? tree) 0)     ; iterate logic
+          ((not (pair? tree))  ; iterate logic
+           (if (odd? tree)     ; filter logic
+             (square tree)     ; transform logic
+             0))
+          (else (+ (sum-odd-squares (car tree)) ; iterate & reduce logic
+                   (sum-odd-squares (cdr tree)))))) ; iterate & reduce logic
+  ```
+
+  ```scheme
+  (define (even-fibs n)
+    (define (next k)
+      (if (> k n) ; iterate logic
+        nil
+        (let ((f (fib k))
+          (if (even? f) ; filter logic
+            (cons f (next (+ k 1)) ; building-up-result logic & iterate logic
+            (next (+ k 1)))))))) ; iterate logic
+    (next 0))
+  ```
+
+- Common structure:
+  - Enumerate something (leaves of a tree or values in a range).
+  - Filter them.
+  - Transform.
+  - Accumulate results using `+`/`cons` starting with `0`/`null`.
+
+  -> Analogy: Signal-flow
+
+- The two procedure definitions fail to exhibit the signal-flow structure: enumeration, filtering, transformation, accumulation are all mixed up and scattered.
+
+### Sequence operations
+
+- Key: To organize the program to reflect better the signal-flow structure, we hoist the "signals" as the main entitie.
+
+- Signals are really just sequences of values. We can represent signals as lists.
+
+- Operations:
+
+  - `map`: Described above.
+
+  - `filter`:
+
+    ```scheme
+    (define (filter pred l)
+      (cond ((null? l) null)
+            ((predicate (car l))
+             (cons (car l)
+                   (filter pred (cdr l))))
+            (else (filter pred (cdr l)))))
+    ```
+
+  - `accumulate`:
+
+    ```scheme
+    (define (accumulate op init l)
+      (cond ((null? l) init)
+            (op (car l)
+                (accumulate op init (cdr l)))))
+    ```
+
+  - Enumeration:
+
+    - Interval: `enumerate-interval`
+
+      ```scheme
+      (define (enumerate-interval low high)
+        (if (> low high)
+          null
+          (cons low
+                (enumerate-interval (+ 1 low) high))))
+      ```
+    - Tree: `enumerate-tree`
+
+      ```scheme
+      (define (enumerate-tree t)
+        (cond ((null? t) null)
+              ((not (pair? t)) (list t))
+              (else (append (enumerate-tree (car t)
+                            (enumerate-tree (cdr t)))))))
+      ```
+
+- Rewriting the above 2 procedures:
+
+  ```scheme
+  (define (sum-odd-squares tree)
+    (accumulate + 0
+      (map square
+           (filter odd? (enumerate-tree tree)))))
+  ```
+
+  ```scheme
+  (define (even-fibs)
+    (accumulate cons null
+      (filter even? (map fib (enumerate-interval 0 n)))))
+  ```
+
+  -> Modular design: Relatively independent pieces can be combined to more complex design.
+  
+  -> Encourage modular design by providng:
+     - A library of standard components.
+     - A conventional interface for connecting the components in flexible ways.
