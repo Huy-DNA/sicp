@@ -334,6 +334,23 @@
                    (count-leaves (cdr x))))))
   ```
 
+### Mapping over trees
+
+- `map` + recursion can be used to map over trees.
+
+- Example `scale-tree`:
+
+  ```scheme
+  (define (scale-tree tree factor)
+    (map (lambda (sub-tree)
+           (if (pair? sub-tree)
+               (scale-tree sub-tree factor)
+               (* sub-tree factor)))
+         tree))
+  ```
+
+- Other sequence operations + recursion can work too.
+
 ## Sequences as conventional interfaces
 
 - *Conventional interfaces* is a powerful design principle for working with data structures.
