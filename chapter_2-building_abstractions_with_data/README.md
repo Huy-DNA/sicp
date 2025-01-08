@@ -461,3 +461,67 @@
   -> Encourage modular design by providng:
      - A library of standard components.
      - A conventional interface for connecting the components in flexible ways.
+
+### Nested mappings
+
+- Computations that are commonly expressed using *nested loops* can also be expressed using the sequence paradigm.
+
+- Problem: Given a positive integer `n`, find all ordered pairs of distinct positive integers `i` and `j`, when `1 <= j < i <= n`, such that `i + j` is prime.
+
+- Idea: Generate all pairs `(i, j)` such that `j < i` & Filter based on the primality of their sum.
+
+- How to generate the pairs?
+
+  1. Enumerate the interval `[1, n]`,
+  2. For each number `i` in the interval, enumerate `[1, i]`.
+  3. For each number `j` in the second interval, map it to `(i, j)`.
+  4. Accumulate along the first interval using `append`.
+
+```scheme
+(accumulate
+  append
+  null
+  (map (lambda (i)
+         (map (lambda (j) (list i j))
+           enumerate-interval 1 (- i 1)))
+       (enumerate-interval 1 n)))
+)
+```
+
+- `flatmap`: Abstract the combination of mapping and accumulating with `append`.
+
+  ```scheme
+  (define (flatmap proc seq)
+    (accumulate append nil (map proc seq)))
+  ```
+
+- Prime-sum problem answer:
+
+  ```scheme
+  (define (prime-sum? pair)
+    (prime? (+ (car pair) (cdr pair))))
+
+  (define (prime-sum-pairs n)
+    (filter prime-sum?
+            (flatmap (lambda (i)
+                       (map (lambda (j) (list i j))
+                            enumerate-interval 1 (- i 1)))
+                     (enumerate-interval 1 n))))
+  ```
+
+- Permutations of a set `S`:
+
+  ```scheme
+  (define (remove e s)
+    (filter (lambda (x) (not (= x e)))
+            s))
+  (define (permutations s)
+    (if (null? s)
+      (list null)
+      (flatmap 
+        (lambda (e)
+          (map
+            (lambda (p) (cons e p))
+            (permutations (remove e s))))
+        s)))
+  ```
