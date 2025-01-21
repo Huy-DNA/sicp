@@ -485,7 +485,6 @@
          (map (lambda (j) (list i j))
            enumerate-interval 1 (- i 1)))
        (enumerate-interval 1 n)))
-)
 ```
 
 - `flatmap`: Abstract the combination of mapping and accumulating with `append`.
