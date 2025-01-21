@@ -524,3 +524,82 @@
             (permutations (remove e s))))
         s)))
   ```
+
+### Example: A picture language
+
+- A simple language for drawing pictures to showcase:
+  - The power of data abstraction & closure.
+  - Exploit the higher-order procedures in an essential way.
+- The data objects are represented as procedurers rather than as list structure.
+
+#### The picture language
+
+- Checklist:
+  - Primitive data structures: *painter*
+    - An instance of which draws an image that is shifted and scaled to fit within a designated parallelogram-shaped frame.
+    - Each "different" "primitive" instance draws a predefined image.
+  - Means of combination: Operations that construct new painters from given painters to combine images.
+    - `beside`: Takes two painters and produces a new painter that draws the first painter's image in the left half of the frame and the second painter's image in the right half of the frame.
+    - `below`: Takes two painters and produces a compound painter that draws the first painter's image below the second painter's image.
+    - `flip-vert`: Takes a painter and produces a painter that draws its image upside-down.
+    - `flip-horiz`: Takes a painter and produces a painter that draws its image left-to-right reversed.
+    - etc.
+    
+    -> The painters are closed under these operations.
+  - Means of abstraction: Scheme procedures.
+
+- Some abstractions:
+
+  - `flipped-pairs`:
+
+    ```scheme
+    (define (flipped-pairs painter)
+      (let ((painter2 (beside painter (flip-vert painter))))
+        (below painter2 painter2)))
+    ```
+
+  - `right-split`: Take a painter and produce a painter that split horizontally in half by `n` times, draws the image in the left half each split, the right half of each split is split half vertically and both halves are continued to be splitted `n-1` times.
+
+    ```scheme
+    (define (right-split painter n)
+      (if (= n 0)
+        painter
+        (let ((painter-rec (right-split painter (- n 1))))
+          (beside painter (below painter-rec painter-rec)))))
+    ```
+    
+  - `up-split`: Take a painter and produce a painter that split vertically in half by `n` times, draws the image in the lower half each split, the upper half of each split is split half horizontally and both halves are continued to be splitted `n-1` times.
+
+    ```scheme
+    (define (up-split painter n)
+      (if (= n 0)
+        painter
+        (let ((painter-rec (up-split painter (- n 1))))
+          (below painter (beside painter-rec painter-rec)))))
+    ```
+
+ - `corner-split`:
+   
+   ```scheme
+   (define (corner-split painter n)
+     (if (= n 0)
+       painter
+       (let ((left-painter (up-split painter n))
+             (smaller-right-painter (right-split painter (- n 1)))
+             (smaller-corner-painter (corner-split painter (- n 1))))
+         (beside left-painter
+                 (below (below smaller-right-painter smaller-right-painter)
+                        smaller-corner-painter)))))
+   ```
+
+#### Higher-order operations
+
+- Abstracting patterns of combining painter operations.
+
+```scheme
+(define (square-of-four tl tr bl br)
+  (lambda (painter)
+    (let ((upper-half (beside (tl painter) (tr painter))
+          (lower-half (beside (bl painter) (br painter)))))
+      (below lower-half upper-half))))
+```
