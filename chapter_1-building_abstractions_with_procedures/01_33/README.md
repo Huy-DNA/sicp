@@ -43,8 +43,7 @@ How do they solve this problem later in this book?
 
 - Introduce the `list` data structure as the common interface for `accumulate` and `filter` to act on.
 
-Conclusion: The takeaway point is that we should focus on creating "high-level natural abstraction" that can be "composed" well. The above solution is one way to achieve this: `accumulate` and `filter` are more natural than `filtered-accumulate`, less cognitive load, more flexible and the more important point is that they are freely composable!
-
+Conclusion: The takeaway point is that we should focus on creating abstractions that "compose" well, which usually implies simplicity, flexibility & comprehensibility. The `list` solution is a demonstration of this.
 # Related exercises
 
 - [1.31](../01_31/README.md)
