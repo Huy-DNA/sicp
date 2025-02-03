@@ -622,3 +622,21 @@
       (add-vect (scale-vect (xcor-vect v) (edge1-frame frame))
                 (scale-vect (ycor-vect v) (edge2-frame frame))))))
 ```
+
+#### Painters
+
+- A painter is represented as a procedure that takes a frame as an argument and fits & draws its image to the frame.
+- Primitive painters are implemented depend on the graphics system and the type of image to be drawn.
+
+```scheme
+(define (segments->painter segment-list)
+  (lambda (frame)
+    (for-each
+      (lambda (segment)
+        (draw-line
+          ((frame-coord-map frame)
+           (start-segment segment))
+          ((frame-coord-map frame)
+           (end-segment segment))))
+  segment-list)))
+```
