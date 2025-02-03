@@ -603,3 +603,22 @@
           (lower-half (beside (bl painter) (br painter)))))
       (below lower-half upper-half))))
 ```
+
+#### Frames
+
+- A *frame* can be described by three vectors: an *origin vector* and two *edge vectors*.
+  - *Origin vector*: The origin vector specifies the offset of the frame's origin from some absolute origin in the plane.
+  - *Edge vectors*: The offsets of the frame's corners from its origin. If these two are perpendicular, the frame is a rectangle, otherwise, it's a parallelogram.
+- Operations:
+  - `origin-frame`: Selector for the origin vector.
+  - `edge1-frame`: Selector for the first edge vector.
+  - `edge2-frame`: Selector for the second edge vector.
+- Images are specified using the coordinates in the unit square ($0 \le x, y \le 1$). Images are shifted and scaled to fit the frame using the *frame coordinate map* - a vector $(x,y)$ in the image is mapped to a point in the frame associated with the vector: $\text{Origin}(\text{Frame}) x \cdot \text{Edge}_1(\text{Frame}) + y \cdot \text{Edge}_2(\text{Frame})$.
+```scheme
+(define (frame-coord-map frame)
+  (lambda (v)
+    (add-vect
+      (origin-frame v)
+      (add-vect (scale-vect (xcor-vect v) (edge1-frame frame))
+                (scale-vect (ycor-vect v) (edge2-frame frame))))))
+```
