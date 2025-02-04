@@ -658,27 +658,27 @@
 - How to:
   - Flip vertically a painter:
     ```scheme
-    (define (flip-painter painter)
+    (define (flip-vert painter)
       (transform-painter painter
                          (make-vect 0.0 1.0)
-                         (make-vect 0.0 0.0)
-                         (make-vect 1.0 1.0)))
+                         (make-vect 1.0 1.0)
+                         (make-vect 0.0 0.0)))
     ```
   - Shrink the painter to the upper-right quarter of the frame:
     ```scheme
     (define (shrink-to-upper-right painter)
       (transform-painter painter
                          (make-vect 0.5 0.5)
-                         (make-vect 0.5 1.0)
-                         (make-vect 1.0 0.5)))
+                         (make-vect 1.0 0.5)
+                         (make-vect 0.5 1.0)))
     ```
   - Rotate counter-clockwise by 90 degree a painter:
     ```scheme
     (define (rotate-90-counter-clockwise painter)
       (transform-painter painter
                          (make-vect 1.0 0.0)
-                         (make-vect 0.0 0.0)
-                         (make-vect 1.0 1.0)))
+                         (make-vect 1.0 1.0)
+                         (make-vect 0.0 0.0)))
     ```
 - Frame transformation also facilitates frame combination. For example, the `beside` combinator:
     ```scheme
