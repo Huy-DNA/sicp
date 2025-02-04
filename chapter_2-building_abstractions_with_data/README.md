@@ -640,3 +640,58 @@
            (end-segment segment))))
   segment-list)))
 ```
+
+#### Transforming and combining painters
+
+- Transforming painter by transforming the frame's origin and corners, `origin`, `corner1` and `corner2` are specified as points.
+
+```scheme
+(define (transform-painter painter origin corner1 corner2)
+  (lambda (frame)
+    (let ((m (frame-coord-map frame)))
+      (let ((new-origin (m origin)))
+        (painter (make-frame new-origin
+                             (sub-vect (m corner1) new-origin)
+                             (sub-vect (m corner2) new-origin)))))))
+```
+
+- How to:
+  - Flip vertically a painter:
+    ```scheme
+    (define (flip-painter painter)
+      (transform-painter painter
+                         (make-vect 0.0 1.0)
+                         (make-vect 0.0 0.0)
+                         (make-vect 1.0 1.0)))
+    ```
+  - Shrink the painter to the upper-right quarter of the frame:
+    ```scheme
+    (define (shrink-to-upper-right painter)
+      (transform-painter painter
+                         (make-vect 0.5 0.5)
+                         (make-vect 0.5 1.0)
+                         (make-vect 1.0 0.5)))
+    ```
+  - Rotate counter-clockwise by 90 degree a painter:
+    ```scheme
+    (define (rotate-90-counter-clockwise painter)
+      (transform-painter painter
+                         (make-vect 1.0 0.0)
+                         (make-vect 0.0 0.0)
+                         (make-vect 1.0 1.0)))
+    ```
+- Frame transformation also facilitates frame combination. For example, the `beside` combinator:
+    ```scheme
+    (define (beside painter1 painter2)
+      (let ((left-painter (transform-painter painter1
+                                             (make-vect 0.0 0.0)
+                                             (make-vect 0.5 0.0)
+                                             (make-vect 0.0 1.0)))
+            (right-painter (transform-painter painter2
+                                              (make-vect 0.5 0.0)
+                                              (make-vect 1.0 0.0)
+                                              (make-vect 0.5 1.0))))
+        (lambda (frame)
+          (left-painter frame)
+          (right-painter frame))))
+    ```
