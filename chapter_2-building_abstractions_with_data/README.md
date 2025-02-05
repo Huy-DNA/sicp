@@ -704,3 +704,42 @@
   - The tools for abstracting procedures can be used to combine painters in a more abstract way than the primitive combinators.
 - *Stratified design*: A complex system should be structured as a sequence of levels that are described using a sequence of languages. A level is used as the primitive for the next level. The language used at each level of a stratified design has primitives, means of combination and means of abstraction appropriate to that level of detail.
 - Pros: Make the programs robust - small changes in a specification will require correspondingly small changes in the program.
+
+## Symbolic data
+
+### Quotation
+
+- The reason we have to quote symbols is to not confuse them with identifiers.
+  - `(list a b)`: Construct a list of the *values* of `a` and `b`.
+  - `(list 'a 'b)`: Construct a list of `a` and `b` themselves.
+- Author's note:
+  - Allowing quotation in a language makes it's harder to reason about: It destroys the notion that *equals can be substituted for equals*. Example: three is one plus two, but "three" is not "one plus two".
+  - Quotation is powerful: It facilitates building expressions that manipulate other expressions.
+- Symbols:
+  ```scheme
+  (define a 1)
+  (define b 2)
+  
+  (list a b)   ; (1 2) 
+  (list 'a 'b) ; (a b)
+  (list 'a b)  ; (a 2)
+  ```
+- List:
+  ```scheme
+  '(a b c)     ; (a b c)
+  '()          ; ()
+  ```
+  - Quotation mark violates the general rule that all compound expressions in our language should be delimited by parenthese and look like lists.
+  - The special form `quote` can be used:
+  ```scheme
+  (quote a)    ; a
+  (quote (a b c)) ; (a b c)
+  ```
+- `eq?`: Test whether 2 symbols are the same.
+- `memq`: Take a symbol and a list, return the sublist beginning with the first occurence of the symbol. If the symbol is not in the list, `false` is returned.
+   ```scheme
+   (define (memq s l)
+     (cond ((null? l) false)
+           ((eq? s (car l)) l)
+           (else (memq s (cdr l)))))
+   ```
