@@ -695,3 +695,12 @@
           (left-painter frame)
           (right-painter frame))))
     ```
+
+#### Levels of language for robust design
+
+- Critical ideas of the picture language:
+  - The fundamental data abstractions are specified using procedural representations.
+  - The means of combination satisfy the closure property.
+  - The tools for abstracting procedures can be used to combine painters in a more abstract way than the primitive combinators.
+- *Stratified design*: A complex system should be structured as a sequence of levels that are described using a sequence of languages. A level is used as the primitive for the next level. The language used at each level of a stratified design has primitives, means of combination and means of abstraction appropriate to that level of detail.
+- Pros: Make the programs robust - small changes in a specification will require correspondingly small changes in the program.
