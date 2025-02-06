@@ -743,3 +743,58 @@
            ((eq? s (car l)) l)
            (else (memq s (cdr l)))))
    ```
+
+### Example: Symbolic differentiation
+
+- Objective: Design a procedure that takes:
+  - An algebraic expression
+  - A variable
+  and returns the derivative of the expression with respect to the variable.
+- Example:
+  - Input: $ax^2 + bx + c$ and $x$.
+  - Output: $2ax + b$.
+- Fun fact: Symbolic differentiation is one of the motivation of Lisp - a symbolic manipulation language.
+- Idea:
+  1. Define a differentiation algorithm that operates on abstract objects such as "sums", "products" and "variables".
+  2. Define the representation for these abstract objects.
+
+#### The differentiation program with abstract data
+
+- Reduction rules:
+  $$
+    \frac{dc}{dx} = 0 \text{, for $c$ a constant or a variable different from $x$}
+  $$
+  $$
+    \frac{dx}{dx} = 1
+  $$
+  $$
+    \frac{d(u+v)}{dx} = \frac{du}{dx} + \frac{dv}{dx}
+  $$
+  $$
+    \frac{d(uv)}{dx} = u\frac{dv}{dx} + v\frac{du}{dx}
+  $$
+- Abstract data types:
+  ```scheme
+  (variable? e)             ; is e a variable?
+  (same-variable? v1 v2)    ; are v1 and v2 the same variable?
+  (sum? e)                  ; is e a sum?
+  (adden e)                 ; addend of the sum e
+  (augend e)                ; augend of the sum e
+  (make-sum a1 a2)          ; construct the sum of a1 and a2
+  (product? e)              ; is e a product
+  (multiplier e)            ; multiplier of the product e
+  (multiplicand e)          ; multiplicand of the product e
+  (make-product m1 m2)      ; construct the product of m1 and m2
+  ```
+- Derivation procedure:
+  ```scheme
+  (define (deriv expr var)
+    (cond ((number? expr) 0)
+          ((variable? expr) (if (same-variable? expr var) 1
+      0))
+          ((sum? expr) (make-sum (deriv (adden expr) var
+                                 (deriv (augend expr) var))))
+          ((product? expr) (make-sum (make-product (multiplier expr) (deriv (multiplicand expr) var))
+                                     (make-product (multiplicand expr) (deriv (multiplier expr) var))))
+          (else (error "unknown expression type" expr))))
+  ```
