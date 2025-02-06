@@ -761,18 +761,10 @@
 #### The differentiation program with abstract data
 
 - Reduction rules:
-  $$
-    \frac{dc}{dx} = 0 \text{, for $c$ a constant or a variable different from $x$}
-  $$
-  $$
-    \frac{dx}{dx} = 1
-  $$
-  $$
-    \frac{d(u+v)}{dx} = \frac{du}{dx} + \frac{dv}{dx}
-  $$
-  $$
-    \frac{d(uv)}{dx} = u\frac{dv}{dx} + v\frac{du}{dx}
-  $$
+  - $\frac{dc}{dx} = 0 \text{, for c a constant or a variable different from x}$
+  - $\frac{dx}{dx} = 1$
+  - $\frac{d(u+v)}{dx} = \frac{du}{dx} + \frac{dv}{dx}$
+  - $\frac{d(uv)}{dx} = u\frac{dv}{dx} + v\frac{du}{dx}$ 
 - Abstract data types:
   ```scheme
   (variable? e)             ; is e a variable?
