@@ -790,3 +790,22 @@
                                      (make-product (multiplicand expr) (deriv (multiplier expr) var))))
           (else (error "unknown expression type" expr))))
   ```
+#### Representing algebraic expressions
+- Variables are symbols:
+  ```scheme
+  (define (variable? x) (symbol? x))
+  (define (same-variable? v1 v2)
+    (and (variable? v1) (variable? v2) (eq? v1 v2)))
+  ```
+- Sums and products are lists:
+  ```scheme
+  (define (make-sum a1 a2) (list '+ a1 a2))
+  (define (make-product a1 a2) (list '* a1 a2))
+  (define (sum? x) (and (pair? x) (eq? (car x) '+)))
+  (define (addend x) (cadr x))
+  (define (augend x) (caddr x))
+  (define (product? x) (and (pair? x) (eq? (car x) '*)))
+  (define (multipler x) (cadr x))
+  (define (multiplicand x) (caddr x))
+  ```
+- Problem: The `deriv` result is unsimplified if using this implementation. This is complex to solve.
