@@ -727,6 +727,7 @@
 - List:
   ```scheme
   '(a b c)     ; (a b c)
+  '(* b (+ a)) ; (* b (+ a))
   '()          ; ()
   ```
   - Quotation mark violates the general rule that all compound expressions in our language should be delimited by parenthese and look like lists.
