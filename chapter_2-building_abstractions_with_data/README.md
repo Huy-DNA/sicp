@@ -809,4 +809,50 @@
   (define (multipler x) (cadr x))
   (define (multiplicand x) (caddr x))
   ```
-- Problem: The `deriv` result is unsimplified if using this implementation. This is complex to solve.
+- Problem: The `deriv` result is unsimplified if using this implementation. This is complex to solve. One can choose to simplify at construction time (eagerly) or at selection time.
+
+### Example: Representing sets
+
+- Operations:
+  - `union-set`: Union 2 sets
+  - `intersection-set`: Intersect 2 set
+  - `element-of-set?`: Check if an element is in the set
+  - `adjoin-set`: Add an element to the set
+
+#### Sets as unordred lists
+- Representation: A list of its elements in which no element appears more than once. Empty set = Empty list.
+
+```scheme
+(define (element-of-set? x set)
+  (cond ((null? set) false)
+        ((equal? (car set) x) true)
+        (else (element-of-set? (cdr set))))
+```
+
+```scheme
+(define (adjoin-set x set)
+  (if (element-of-set? x set)
+    set
+    (cons x set)))
+```
+
+```scheme
+(define (intersection-set s1 s2)
+  (cond ((or (null? s1) (null? s2)) null)
+        ((element-of-set? (car s1) s2) (cons (car s1) (intersection-set (cdr s1) s2)))
+        (else (intersection-set (cdr s1) s2))))
+```
+
+```scheme
+(define (union-set s1 s2)
+  (cond ((null? s1) s2)
+        ((element-of-set? (car s1) s2) (union-set (cdr s1) s2))
+        (else (cons (car s1) (union-set (cdr s1) s2)))))
+```
+
+- When choosing a representation, we should be concerned of efficiency.
+- For sets of size `n`, the time complexity of each operation is:
+  - `element-of-set?`: Θ(n)
+  - `adjoin-set`: Θ(n)
+  - `intersection-set`: Θ(n^2)
+  - `union-set`: Θ(n^2)
