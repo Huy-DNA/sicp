@@ -856,3 +856,45 @@
   - `adjoin-set`: Θ(n)
   - `intersection-set`: Θ(n^2)
   - `union-set`: Θ(n^2)
+
+#### Sets as ordered lists
+
+- Idea: Speed up set operations by ordering the set elements.
+
+- `element-of-set?` can now stop if it encounters an element that's larger the desired element:
+  ```scheme
+  (define (element-of-set? x set)
+    (cond ((null? set) false)
+          ((equal? x (car set)) true)
+          ((> (car set) x) false)
+          (else (element-of-set? x (cdr set)))))
+  ```
+  Still Θ(n) but on average the steps are halved.
+- `intersection-set` gains more impressive speedup:
+  ```scheme
+  (define (intersection-set s1 s2)
+    (cond ((or (null? s1) (null? s2)) null)
+          ((< (car s1) (car s2)) (intersection-set (cdr s1) s2))
+          ((> (car s1) (car s2)) (intersection-set (cdr s2) s1))
+          (else (cons (car s1) (intersection-set (cdr s1) (cdr s2))))))
+  ```
+  Θ(n) for two sets of size n.
+- `adjoin-set`
+  ```scheme
+  (define (adjoin-set x set)
+    (cond ((null? set) (cons x nil))
+          ((< x (car set)) (cons x set)
+          ((= x (car set)) set))
+          (else (cons (car set) (adjoin-set x (cdr set))))))
+  ```
+  Still Θ(n) but on average the steps are halved.
+- `union-set`
+  ```scheme
+  (define (union-set s1 s2)
+    (cond ((null? s1) s2)
+          ((null? s2) s1)
+          ((< (car s1) (car s2)) (cons (car s1) (union-set (cdr s1) s2)))
+          ((> (car s1) (car s2)) (cons (car s2) (union-set (cdr s2) s1)))
+          (else (cons (car s1) (union-set (cdr s1) (cdr s2))))))
+  ```
+  Θ(n) for two sets of size n. 
