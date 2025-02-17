@@ -898,3 +898,39 @@
           (else (cons (car s1) (union-set (cdr s1) (cdr s2))))))
   ```
   Θ(n) for two sets of size n. 
+
+#### Sets as binary trees
+
+- Idea: Binary search tree.
+  - Each node of the tree holds one element of the set ("entry" at that node).
+  - The "left" link points to elements smallerr than the one at the node.
+  - The "right" link to elements greater than the one at the node.
+- If the tree is balanced, every time we switch to the left or right subtree, we reduce the number element to half -> Potentially Θ(log n).
+- Tree as a list of three items: The entry at the node, the left subtree, the right subtree.
+
+```scheme
+(define (make-tree entry left right)
+  (list entry left right))
+(define (left-branch tree)
+  (cadr tree))
+(define (right-branch tree)
+  (caddr tree))
+(define (entry tree) (car tree))
+```
+- Set operations:
+  - Membership check: Θ(log n)
+    ```scheme
+    (define (element-of-set? x set)
+      (cond ((null? set) false)
+            ((= x (entry set)) true)
+            ((> x (entry set)) (element-of-set? x (right-branch set)))
+            (else (element-of-set? x (left-branch set)))))
+    ```
+  - Add membership: Θ(log n)
+    ```scheme
+    (define (adjoin-set x set)
+      (cond ((null? set) (make-tree x nil nil))
+            ((>= x (entry set)) (make-tree x (left-branch set) (adjoin-set x (right-branch set))))
+            (else (make-tree x (adjoin-set x (left-branch set)) (right-branch set)))))
+    ```
+
