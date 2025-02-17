@@ -934,3 +934,15 @@
             (else (make-tree x (adjoin-set x (left-branch set)) (right-branch set)))))
     ```
 
+#### Sets and information retrieval
+
+- Database can be represented as a set of records.
+- To locate the record with a given key we use a procedure `lookup`, which takes as arguments a key and a database and returns the record that has that key, or false if there is no such record. -> Similar to `element-of-set?`.
+- If the database is a set represented as an unordered list:
+
+```scheme
+(define (lookup given-key db)
+  (cond ((null? db) false)
+        ((equal? given-key (key (car db))))
+        (else (lookup given-key (cdr db)))))
+```
