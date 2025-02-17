@@ -943,6 +943,6 @@
 ```scheme
 (define (lookup given-key db)
   (cond ((null? db) false)
-        ((equal? given-key (key (car db))))
+        ((equal? given-key (key (car db))) (car db))
         (else (lookup given-key (cdr db)))))
 ```
