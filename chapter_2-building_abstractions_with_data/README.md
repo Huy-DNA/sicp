@@ -946,3 +946,87 @@
         ((equal? given-key (key (car db))) (car db))
         (else (lookup given-key (cdr db)))))
 ```
+
+#### Example: Huffman encoding trees
+
+- With `b` bits, we can represent `2^b` symbols.
+- If we want to represent `n` symbols, we need at least `log2(n)`.
+- Example: If we represent our message using 8 different symbols: A, B, C, D, E, F, G, H, we must choose a code with three bits per character, like so:
+  - A: 000
+  - B: 001
+  - C: 010
+  - D: 011
+  - E: 100
+  - F: 101
+  - G: 110
+  - H: 111
+
+  -> Fixed length code
+- Variable-length code: Different symbols may be represented by different number of bits. Example: Morse code
+- Pros: If our messages are such that some symbols appear very frequently and some very rarely, we can code encode data more efficiently: More frequent symbols can be assigned shorter codes.
+- Cons: How to know that you have just reached the end of symbol in reading a sequence of zeros and onces.
+  - One solution: Design the code in such a way that no complete code for any symbol is a prefix of another code for another symbol. -> *Prefix code*
+- Huffman encoding method: An encoding scheme that use variable-length prefix codes that take advantage of the relative frequencies of symbols in the messages to be encoded.
+- A Huffman code can be represented as a binary tree:
+  - Leaves are the symbols that are encoded.
+  - Non-leaf nodes are the sets containing all the symbols in the leaves that lie below the node.
+  - Each symbol at a leaf is assigned a weight (which is its relative frequency).
+  - Each non-leaf node is assigned the sum of all the weights of the leaves lying below it.
+- Given a Huffman tree, we can find the encoding of any symbol:
+  - Start at the root.
+  - Move down until we reach the leaf that holds the symbol: Each time we move down a left branch we add a `0` to the code, otherwise a `1`.
+- Given a Huffman tree, we can decode a bit sequence:
+  - Start at the root.
+  - If encounter `0`, move left, otherwise, move right.
+  - If a leaf is reached, a new symbol is generated.
+
+#### Generating Huffman trees
+- Input:
+  - An "alphabet" of symbols.
+  - Their relative frequencies.
+- Output: The "best" code - the tree that will encode messages with the fewest bits.
+- The algorithm:
+  - Initially, we have a set of leaf nodes with the weights assigned representing the frequencies of the symbols they stand for.
+  - Each time, we take out two nodes with the lowest weights and merge them into a non-leaf node with the sum of the two weights, and re-add it to the set.
+  - Do this until there's only one node left, which is the root node.
+
+```
+Initial leaves {(A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
+         Merge {(A 8) (B 3) ({C D} 2) (E 1) (F 1) (G 1) (H 1)}
+         Merge {(A 8) (B 3) ({C D} 2) ({E F} 2) (G 1) (H 1)}
+         Merge {(A 8) (B 3) ({C D} 2) ({E F} 2) ({G H} 2)}
+         Merge {(A 8) (B 3) ({C D} 2) ({E F G H} 4)}
+         Merge {(A 8) ({B C D} 5) ({E F G H} 4)}
+         Merge {(A 8) ({B C D E F G H} 9)}
+   Final merge {({A B C D E F G H} 17)}
+```
+
+#### Representing Huffman trees
+
+- The leaf:
+  ```scheme
+  (define (make-leaf symbol weight) (list 'leaf symbol weight))
+  (define (leaf? object) (eq? (car object) 'leaf))
+  (define (symbol-leaf x) (cadr x))
+  (define (weight-leaf x) (caddr x))
+  ```
+- General tree:
+  ```scheme
+  (define (make-code-tree left right)
+    (list left
+          right
+          (append (symbols left) (symbols right))
+          (+ (weight left) (weight right))))
+  (define (left-tree tree) (car tree))
+  (define (right-tree tree) (cadr tree))
+  (define (symbols tree)
+    (if (leaf? tree)
+        (list (symbol-leaf tree)
+        (caddr tree))))
+  (define (weight tree)
+    (if (leaf? tree)
+        (weight-leaf tree)
+        (cadddr tree)))
+  ```
+
+
