@@ -1029,4 +1029,23 @@ Initial leaves {(A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
         (cadddr tree)))
   ```
 
+#### The decoding procedure
+
+```
+(define (decode bits tree)
+  (define (choose-branch bit branch)
+    (cond ((= bit 0) (left-branch branch))
+          ((= bit 1) (right-branch branch))
+          (error "bad input: decode failed")))
+  (define (decode-recur bits current-branch)
+    (if (null? bits)
+        (if (eq? current-branch tree)
+            '()
+            (error "bad input: decode failed"))
+        (let ((next-branch (choose-branch (car bits) current-branch)))
+          (if (leaf? next-branch)
+              (cons (symbol-leaf next-branch) (decode-recur (cdr bits) tree))
+              (decode-recur (cdr bits) next-branch)))))
+  (decode-recur bits tree))
+```
 
