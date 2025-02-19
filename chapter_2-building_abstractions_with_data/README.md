@@ -1031,7 +1031,7 @@ Initial leaves {(A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
 
 #### The decoding procedure
 
-```
+```scheme
 (define (decode bits tree)
   (define (choose-branch bit branch)
     (cond ((= bit 0) (left-branch branch))
@@ -1049,3 +1049,24 @@ Initial leaves {(A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
   (decode-recur bits tree))
 ```
 
+#### Sets of weighted elements
+
+- We need to work with sets of leaves and trees to build up the encoding tree: Each time we need to merge the two smallest items and readd it to the set.
+
+  -> We'll use an ordered representation: An order list with increasing order of weight.
+- The items added are never already in a set, we needn't test for equality:
+  ```scheme
+  (define (adjoin x set)
+    (cond ((null? set) (list x))
+          ((> (weight x) (weight (car set))) (cons (car set) (adjoin x (cdr set))))
+          (else (cons x set))))
+  ```
+- Building an ordered sets from a list of pairs:
+  ```scheme
+  (define (make-leaf-set pairs)
+    (if (null? pairs)
+      '()
+      (adjoin-set (make-leaf (car (car pairs))
+                             (cadr (car pairs)))
+                  (make-leaf-set (cdr pairs)))))
+  ```
