@@ -1070,3 +1070,89 @@ Initial leaves {(A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
                              (cadr (car pairs)))
                   (make-leaf-set (cdr pairs)))))
   ```
+
+## Multiple representations for abstract data
+- There might be more than one useful representation for a data object. Example: complex numbers:
+  - Rectangular form.
+  - Polar form.
+- Programming systems are often designed by many people working over extended periods of time - choices of data representation may not be agreed upon in advance.
+- We need abstraction barriers that isolate different design choices and permit them to coexist in a single program.
+- Large programs are often created by combining pre-existing modules that were designed in isolation, conventions are needed to permit programmers to incorporate modules into larger systems *additively*.
+- *Generic procedures*: Procedures that can operate on data that may be represented in more than one way.
+  - Objects with *type tags*: Data objects that include explicit information about how they are to be processed.
+  - *Data-directed programming*: A powerful and convenient implementation strategy for additively assembling systems with generic operations.
+- Complex number arithmetic operations:
+  - `add-complex`
+  - `sub-complex`
+  - `mul-complex`
+  - `div-complex`
+
+```
+                        Programs that use complex numbers
+        -----------------------------------------------------------
+  ------|  add-complex  sub-complex   mul-complex   div-complex   |-----
+        ----------------------------------------------------------
+                          Complex-arthimetic package
+  ----------------------------------------------------------------------
+        Rectangular                   |              Polar
+       reresentation                  |          representation
+  ----------------------------------------------------------------------
+```
+
+### Representations for complex numbers
+
+- Rectangular form is more suitable for addition.
+- Polar form is more suitable for multiplication.
+- Operations on complex numbers:
+  - `real-part`
+  - `imag-part`
+  - `magnitude`
+  - `angle`
+  - `make-from-real-imag`
+  - `make-from-mag-ang`
+- Definition of complex number arithmetic operations 
+```scheme
+(define (add-complex c1 c2)
+  (make-from-real-imag (+ (real-part c1) (real-part c2))
+                       (+ (imag-part c1) (imag-part c2))))
+(define (sub-complex c1 c2)
+  (make-from-real-imag (- (real-part c1) (real-part c2))
+                       (- (imag-part c1) (imag-part c2))))
+(define (mul-complex c1 c2)
+  (make-from-mag-ang (* (magnitude c1) (magnitude c2))
+                     (+ (angle c1) (angle c2))))
+(define (div-complex c1 c2)
+  (make-from-mag-ang (/ (magnitude c1) (magnitude c2))
+                     (- (angle c1) (angle c2))))
+```
+- To implement the complex number selectors and constructors, we can either represent them as ordered pairs of `(real, imag)` or `(magnitude, angle)`.
+- Two programmers Ben and Alyssa choose the former and the latter respectively:
+  - Ben:
+    ```scheme
+    (define (real-part z) (car z))
+    (define (imag-part z) (cdr z))
+    (define (magnitude z)
+      (sqrt (+ (square (real-part z))
+               (square (imag-part z)))))
+    (define (angle z)
+      (atan (imag-part z) (real-part z)))
+    (define (make-from-real-imag x y) (cons x y))
+    (define (make-from-mag-ang r a)
+      (cons (* r (cos a))
+            (* r (sin a))))
+    ```
+  - Alyssa:
+    ```scheme
+    (define (real-part z) (* (magnitude z) (cos (angle z))))
+    (define (imag-part z) (* (magnitude z) (sin (angle z))))
+    (define (magnitude z) (car z))
+    (define (angle z) (cdr z))
+    (define (make-from-real-imag x y)
+      (cons (sqrt (+ (square x) (square y)))
+            (atan y x)))
+    (define (make-from-mag-ang r a) (cons r a))
+    ```
+- Any of these two representations will work because of the data abstraction.
+
+### Tagged data
+- *Principle of least commitment*: Of which data abstraction is an application - we defer the choice of a concrete representation to the last possible moment.
