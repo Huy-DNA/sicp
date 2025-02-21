@@ -1156,3 +1156,89 @@ Initial leaves {(A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
 
 ### Tagged data
 - *Principle of least commitment*: Of which data abstraction is an application - we defer the choice of a concrete representation to the last possible moment.
+- We can carry the *principle of least commitment* further: Maintaining the ambiguity of representation even after we have designed the selectors and constructors.
+- For two representations to coexist, we need some way to distinguish them. -> *type tag* is a straightforward way to do so.
+- 3 basic operations:
+  ```scheme
+  (define (attach-tag type-tag contents)
+    (cons type-tag contents))
+  (define (type-tag datum)
+    (car datum))
+  (define (contents datum)
+    (cdr datum))
+  ```
+- Predicates:
+  ```scheme
+  (define (rectangular? z)
+    (eq? (car z) 'rectangular))
+  (define (polar? z)
+    (eq? (car z) 'polar))
+  ```
+- Ben and Alyssa *have to* modify their code for their representations to coexist in the same system:
+  - Ben:
+  ```scheme
+    (define (real-part-rectangular z) (car z))
+    (define (imag-part-rectangular z) (cdr z))
+    (define (magnitude-rectangular z)
+      (sqrt (+ (square (real-part-rectangular z))
+               (square (imag-part-rectangular z)))))
+    (define (angle-rectangular z)
+      (atan (imag-part-rectangular z) (real-part-rectangular z)))
+    (define (make-from-real-imag-rectangular x y) (attach-tag 'rectangular (cons x y)))
+    (define (make-from-mag-ang r a)
+      (attach-tag 'rectangular
+        (cons (* r (cos a))
+              (* r (sin a)))))
+  ```
+  - Alyssa:
+  ```scheme
+    (define (real-part-polar z) (* (magnitude-polar z) (cos (angle-polar z))))
+    (define (imag-part-polar z) (* (magnitude-polar z) (sin (angle-polar z))))
+    (define (magnitude-polar z) (car z))
+    (define (angle-polar z) (cdr z))
+    (define (make-from-real-imag-polar x y)
+      (attach 'polar
+        (cons (sqrt (+ (square x) (square y)))
+              (atan y x))))
+    (define (make-from-mag-ang r a) (attach 'polar (cons r a)))
+  ```
+- Generic selectors pattern match on the type tag:
+  ```scheme
+  (define (real-part z)
+    (cond ((rectangular? z) (real-part-rectangular (contents z)))
+          ((polar? z) (real-part-polar (contents z)))
+          (else (error "Unknown type" z))))
+  (define (imag-part z)
+    (cond ((rectangular? z) (imag-part-rectangular (contents z)))
+          ((polar? z) (imag-part-polar (contents z)))
+          (else (error "Unknown type" z))))
+  (define (magnitude z)
+    (cond ((rectangular? z) (magnitude-rectangular (contents z)))
+          ((polar? z) (magnitude-polar z))
+          (else (error "Unknown type" z))))
+  (define (angle z)
+    (cond ((rectangular? z) (angle-rectangular (contents z)))
+          ((polar? z) (angle-polar (contents z)))
+          (else (error "Unknown type" z))))
+  ```
+
+- The selectors abstract away the representation:
+```
+                        Programs that use complex numbers
+        -----------------------------------------------------------
+  ------|  add-complex  sub-complex   mul-complex   div-complex   |-----
+        ----------------------------------------------------------
+                          Complex-arthimetic package
+                       -------------------------------
+                      |   real-part      magnitude   |
+  --------------------|   imag-part      angle       |-------------------
+                      --------------------------------
+        Rectangular                   |              Polar
+       reresentation                  |          representation
+  ----------------------------------------------------------------------
+```
+- Remarks:
+  - The generic selectors strip off the tag and pass the contents on to the module code.
+  - When the module wants to construct a number for general use, it tags it with a type.
+
+  -> Stripping off and attach tags as data objects are passed from level to level can be an important organization strategy.
