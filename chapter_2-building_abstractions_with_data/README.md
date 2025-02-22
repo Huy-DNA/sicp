@@ -1242,3 +1242,75 @@ Initial leaves {(A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
   - When the module wants to construct a number for general use, it tags it with a type.
 
   -> Stripping off and attach tags as data objects are passed from level to level can be an important organization strategy.
+
+### Data-directed programming and additivity
+
+- *Dispatching on type*: Checking the type of a datum and calling an appropriate procedure.
+  - Pros: Modularity
+  - Cons: Non-additivity.
+    - The generic interface procedures must know about all the different representations. -> Adding new representations requires modifying all the generic interface procedures.
+    - Name collision: Even though the individual representations can be designed separately, we must guarantee that no two procedures in the entire system have the same name.
+- Additivity: No modification to existing components when adding a new representation. -> Data-directed programming.
+- For each representation (type), we need to support similar operations:
+  
+  |             | Polar       | Rectangular |
+  | ----------- | ----------- | ----------- |
+  | `real-part` | `real-part-polar` | `real-part-rectangular` |
+  | `imag-part` | `imag-part-polar` | `imag-part-rectangular` |
+  | `magnitude` | `magnitude-polar` | `magnitude-rectangular` |
+  | `angle`     | `angle-polar` | `angle-rectangular` |
+
+  The columns represent the types, the rows represent the operations.
+
+  - *Dispatching on types* doesn't support adding new types well - requires modification of all existing generic operations.
+  - *Message passing* doesn't support adding new operations well - requires modification of all existing types (in some OOP languages, adding new operations will cause compilation failure if existing types are not modified to support them). Message passing can be thought as *dispatching on operations*.
+  - *Data-directed programming* supports adding both well.
+- *Data-directed programming* is the technique of designing programs to work with such a table directly.
+  - A global lookup table of the above form is constructed.
+  - The interface to the representation will be now a single procedure that lookups the procedure implementation corresponding to the pair `(operation, type)`.
+  
+  -> Adding a new representation package to the system only requires adding new entries to the table.
+- Two procedures for manipulating the operation-and-type table:
+  - `(put <op> <type> <item>)` installs the `<item>` in the table, indexes by the `<op>` and the `<type>`.
+  - `(get <op <type>)` looks up the `<op>`, `<type>` entry in the table. If not found, return false.
+- Ben and Alyssa will now define a collection of procedures (a *package*) and interface these to the rest of the system by adding entries to the table (*installation*).
+  ```scheme
+  (define (install-rectangular-package)
+    ;; internal procedures
+    (define (real-part z) (car z))
+    (define (imag-part z) (cdr z))
+    (define (make-from-real-imag x y) (cons x y))
+    (define (magnitude z)
+      (sqrt (+ (square (real-part z))
+               (square (imag-part z)))))
+    (define (angle z)
+      (atan (imag-part z) (real-part z)))
+    (define (make-from-mag-ang r a)
+      (cons (* r (cos a)) (* r (sin a))))
+    ;; interface to the rest of the system
+    (define (tag x) (attach-tag 'rectangular x))
+    (put 'real-part '(rectangular) real-part)
+    (put 'imag-part '(rectangular) imag-part)
+    (put 'magnitude '(rectangular) magnitude)
+    (put 'angle '(rectangular) angle)
+    (put 'make-from-real-imag 'rectangular
+    (lambda (x y) (tag (make-from-real-imag x y))))
+    (put 'make-from-mag-ang 'rectangular
+    (lambda (r a) (tag (make-from-mag-ang r a))))
+    'done)
+  ```
+  - The names `real-part`, `imag-part`, etc. are now local.
+- The generic interface procedure:
+  ```scheme
+  (define (apply-generic op . args)
+    (let ((type-tags (map type-tag args)))
+      (let ((proc (get op type-tags)))
+        (if proc
+            (apply proc (map contents args))
+            (error "No method for these types"
+                   (list op type-tags))))))
+  ```
+  1. It assumes `args` is a list of tagged data (notice the `.` so `args` acts like a rest arguments).
+  2. It extracts the types of every argument and collect it into a list.
+  3. It looks up the entry at `op` and the list of argument types.
+  4. If no entry was found, throw an error. Otherwise, apply the procedure to the tag-stripped `args`.
