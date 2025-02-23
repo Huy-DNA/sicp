@@ -1314,3 +1314,31 @@ Initial leaves {(A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
   2. It extracts the types of every argument and collect it into a list.
   3. It looks up the entry at `op` and the list of argument types.
   4. If no entry was found, throw an error. Otherwise, apply the procedure to the tag-stripped `args`.
+
+#### Message passing
+
+- Key idea of *data-directed programming*: handle generic operations in programs by dealing explicitly with operation-type-tables.
+- *Dispatching-on-types* haseach operation take care of its own dispatching. -> Decomposition of the operation-and-type table into rows (each generic operation represents a row).
+
+  -> Intelligent operations.
+  
+  -> What about "intelligent data objects" or dispatching on operation names?
+
+  -> Message passing.
+
+- Message passing decomposes the operation-and-type table into columns. We do not use type tags anymore, instead, the data representation is a closure, which pattern match on the operation names:
+
+  ```scheme
+  (define (make-from-real-imag x y)
+    (define (dispatch op)
+      (cond ((eq? op 'real-part) x)
+            ((eq? op 'imag-part) y)
+            ((eq? op 'magnitude) (sqrt (+ (square x) (square y))))
+            ((eq? op 'angle) (atan y x))
+            (else (error "Unknown op" op))))
+    dispatch)
+  ```
+- The corresponding `apply-generic` procedure:
+  ```scheme
+  (define (apply-generic op arg) (arg op))
+  ```
