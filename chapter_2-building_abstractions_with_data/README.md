@@ -1342,3 +1342,30 @@ Initial leaves {(A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
   ```scheme
   (define (apply-generic op arg) (arg op))
   ```
+## Systems with generic operations
+- Key idea in designing systems in which data objects can represented in more than one way: Design the generic interface procedures, others are implemented in terms of these procedure.
+- Topic: Define operations that are generic over different kinds of arguments.
+- What we have done: Several different packages of arithmetic operations:
+  - The primitive arithmetic (`+`, `-`, `*`, `/`).
+  - The rational-number arithmetic (`add-rat`, `sub-rat`, `mul-rat`, `div-rat`).
+  - The complex number arithmetic
+- Problem: Use data-directed techniques to construct a package of arithmetic operations that incorporates all the arithmetic packages above.
+
+```
+                                            Programs that use numbers
+                                           ---------------------------
+-------------------------------------------| add   sub   mul   div   |---------------------------------------------
+                                           --------------------------
+                                            Generic arithmetic package
+  ----------------------   -----------------------------------   --------------------------------------------------
+  |  add-rat   sub-rat | - |  add-complex        sub-complex | - |  +  -  *  /     |
+  |  mul-rat   div-rat | | |  mul-complex        div-complex | | |                 |
+  ---------------------- | ----------------------------------- | --------------------------------------------------
+                         |                                     |
+                         |        Complex arithmetic           |
+        Rational         |                                     |   Ordinary
+       arithmetic        |-------------------------------------|  arithmetic
+                         |                   |                 |
+                         |  Rectangular      |    Polar        |
+-------------------------------------------------------------------------------------------------------------------
+```
