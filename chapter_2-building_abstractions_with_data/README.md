@@ -1483,3 +1483,31 @@ Initial leaves {(A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
     ((get 'make-from-mag-ang 'complex) r a))
   ```
 - The two-level tag system: The complex numbers are tagged twice and have to stripped twice as dispatching goes.
+
+### Combining data of different types
+
+- Problem: The operations defined so far treat the different data types as being completely independent. It's actually meaningful to define operations that cross the type boundaries, i.e. addition of a complex number to an ordinary number. How to support them without seriously violating our module boundaries?
+- Design a different procedure for each possible combination of types -> Infeasible:
+  - A package must also implement all possible cross-type operations.
+  - No additivity: An individual packages need to unreasonably take account of other packages.
+    
+    Example: "It seems reasonable that handling mixed operations on complex numbers and ordinary numbers should be the responsibility of the complex-number package. Combining rational numbers and complex numbers, however, might be done by the complex package, by the rational package, or by some third package that uses operations extracted from these two packages. Formulating coherent policies on the division of responsibility among packages can be an overwhelming task in designing systems with many packages and many cross-type operations."
+
+#### Coercion
+
+- In the general situation of completely unrelated operations acting on completely unrelated types, implementing explicit cross-type operations, cumbersome though it may be, is the best that one can hope for.
+- We can usually do better if we notice of additional structure that may be latent in our type system: Often the different data types are not completely independent, that is, there my be ways by which objects of one type may be viewed as being of another type. -> *coercion*.
+
+  -> *Coercion procedures* that transform an object of one type into an equivalent object of another type.
+
+- Coercion definition:
+  ```scheme
+  (define (scheme-number->complex n)
+    (make-complex-from-real-imag (contents n) 0))
+  ```
+- Installation of coercion procedures in a special coercion table, indexed under the names of the two types:
+  ```scheme
+  (put-coercion 'scheme-number
+                'complex
+                scheme-number->complex)
+  ```
