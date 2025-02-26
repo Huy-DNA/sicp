@@ -1511,3 +1511,46 @@ Initial leaves {(A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
                 'complex
                 scheme-number->complex)
   ```
+- Modify `apply-generic` to handle coercion:
+  ```scheme
+  (define (apply-generic op . args)
+    (let ((type-tags (map type-tag args)))
+      (let ((proc (get op type-tags)))
+        (if proc
+          (apply proc (map content args))
+          (if (= (length args) 2)
+            (let ((type0->type1 (get-coercion (car type-tags) (cadr type-tags)))
+                  (type1->type0 (get-coercion (cadr type-tags) (car type-tags))))
+              (cond (type0->type1
+                      (apply-generic op (type0->type1 (car args)) (cadr args)))
+                    (type1->type0
+                      (apply-generic op (car args) (type1->type0 (cadr args))))
+                    (else (error "No method for these types")))))))))
+  ```
+- Pros: We only need to define a coercion for each pair of types rather than a whole new operation for each generic operation.
+- Cons: Not general enough - the objects to be combined can be converted to the type of the other it may still be possible to perform the operation by converting both objects to a third type.
+
+  -> Take advantage of further structure in the relations among types.
+
+#### Hierarchies of types
+
+- Example: Integer is a subtype of rational number, which is a subtype of complex numbers.
+
+  -> A *tower* of types:
+  ```
+    integer --> rational --> real --> complex
+  ```
+  -> We can just define `integer->rational`, `rational->real`, `real->complex` then we can obtain the rest of the coercion automatically.
+- Redesign of `apply-generic`:
+  - Each type supplies a `raise` procedure, which "raises" objects of that type one level in the tower.
+  - `apply-generic` when operate on objects of different types, it can successively raise the lower types until all the objects are at the same level in the tower.
+- With a tower, we can easily implement the notion that every type "inherits" all operations defined on a supertype.
+- Another advantage of a tower over amore general hierarchy is that it's simple to "lower" a data object to the simplest representation.
+
+#### Inadequacies of hierarchies
+
+- Not all hierarchies are towers.
+- In these hierarchies, either raising or lowering a type is difficult.
+- Dealing with large numbers of iterrelated types while still preserving modlarity in the design of large systems is very difficult!
+  - "Developing a useful, general framework for expressing the relations among different types of entities (what philosophers call “ontology”) seems intractably difficult".
+  - "A variety of inadequate ontological theories have been embodied in a plethora of correspondingly inadequate programming languages. For example, much of the complexity of object-oriented programming languages—and the subtle and confusing differences among contemporary object-oriented languages—centers on the treatment of generic operations on interrelated types."
