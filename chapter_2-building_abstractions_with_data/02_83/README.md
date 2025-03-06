@@ -22,5 +22,8 @@ Suppose you are designing a generic arithmetic system for dealing with the tower
 (define (raise n)
   (let ((type (type-tag n))
         (content (contents n)))
-    ((get-raise type) content)))
+    (let ((raise-proc (get-raise type)))
+       (if raise-proc
+          (raise-proc content)
+          n))))
 ```
