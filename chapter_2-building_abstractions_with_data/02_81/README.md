@@ -11,7 +11,7 @@ Louis Reasoner has noticed that `apply-generic` may try to coerce the arguments 
 (put-coercion 'complex 'complex complex->complex)
 ```
 
-a. With Louis’s coercion procedures installed, what hap- pens if apply-generic is called with two arguments of type scheme-number or two arguments of type complex for an operation that is not found in the table for those types? For example, assume that we’ve defined a generic exponentiation operation:
+a. With Louis’s coercion procedures installed, what happens if `apply-generic` is called with two arguments of type scheme-number or two arguments of type complex for an operation that is not found in the table for those types? For example, assume that we’ve defined a generic exponentiation operation:
 
 ```scheme
 (define (exp x y) (apply-generic 'exp x y))
@@ -33,3 +33,31 @@ b. Is Louis correct that something had to be done about coercion with arguments 
 c. Modify `apply-generic` so that it doesn’t try coercion if the two arguments have the same type. 
 
 # Answer
+
+a. If `apply-generic` is called with two arguments of type scheme-number or two arguments of type complex for an operation is not found for those types, infinite recursion occur:
+  - `apply-generic` fails to find the operation.
+  - `apply-generic` finds out the self-coercion procedures.
+  - `apply-generic` coerce the first arg.
+  - `apply-generic` recalls itself with the same two args.
+
+b. `apply-generic` works correctly as is, it will error when an operation is not found those types.
+
+c.
+
+```scheme
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+        (apply proc (map content args))
+        (if (= (length args) 2)
+          (if (eq? (car type-tags) (cadr type-tags))
+            (error "No method for these types")
+            (let ((type0->type1 (get-coercion (car type-tags) (cadr type-tags)))
+                  (type1->type0 (get-coercion (cadr type-tags) (car type-tags))))
+              (cond (type0->type1
+                      (apply-generic op (type0->type1 (car args)) (cadr args)))
+                    (type1->type0
+                      (apply-generic op (car args) (type1->type0 (cadr args))))
+                    (else (error "No method for these types"))))))))))
+```
