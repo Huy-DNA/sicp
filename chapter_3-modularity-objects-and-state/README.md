@@ -24,3 +24,83 @@ One powerful design strategy: Base the structure of our programs on the structur
   - Decouple simulated time in our model from the order of the events that take place in the computer during evaluation.
   -> Technique: *delayed evaluation*.
 
+## Assignment and local state
+
+- The world is populated by independent objects, each *has a state* that change over time.
+- An object is said to *have state* if its behavior is influenced by its history.
+- The state of an object is characterizable by one or more *state variables*, which maintain enough information about history to determine the object's current behavior.
+- Objects may influence the state of the others through *interactions* to couple the state variables of one object to those of other objects.
+- This view is mostly useful when the state variables of the system can be grouped into *closely coupled subsystems* that are only *loosely coupled* to other *subsystems*.
+- To model state variables using symbolic names, the programming language must provide an *assignment operator* to change the value associated with a name.
+
+### Local state variables
+
+- Example of time-varying state:
+  ```scheme
+  (withdraw 25)
+  75
+  (withdraw 25)
+  50
+  (withdraw 60)
+  "Insufficient funds"
+  (withdraw 15)
+  35
+  ```
+  -> New behavior: `(withdraw 25)` returns different results with the two calls.
+  ```scheme
+  (define balance 100)
+  (define (withdraw amount)
+    (if (>= balance amount)
+      (begin (set! balance (- balance amount))
+             balance)
+      "Insufficient funds"))
+  ```
+- Special form:
+  ```scheme
+  (set! <name> <new-value>)
+  ```
+- Special form:
+  ```scheme
+  (begin <exp1> <exp2> ... <expk>)
+  ```
+  evaluates the expressions in order and return the value of the final expression.
+- Encapsulate the local state:
+  ```scheme
+  (define new-withdraw
+    (let ((balance 100))
+      (lambda (amount)
+        (if (>= balance amount)
+            (begin (set! balance (-balance amount))
+                   balance)
+            "Insufficient funds"))))
+  ```
+  -> Hiding principle.
+- Object constructor:
+  ```scheme
+  (define (make-withdraw balance)
+    (lambda (amount)
+      (if (>= balance amount)
+          (begin (set! balance (- balance amount))
+                 balance)
+          "Insufficient funds")))
+  ```
+- Bank account object:
+  ```scheme
+  (define (make-account balance)
+    (define (withdraw amount)
+        (if (>= balance amount)
+            (begin (set! balance (- balance amount))
+                    balance)
+            "Insufficient funds"))
+    (define (deposit amount)
+        (set! balance (+ balance amount))
+        balance)
+    (define (dispatch m)
+        (cond ((eq? m 'withdraw) withdraw)
+              ((eq? m 'deposit) deposit)
+              (else (error "Unknown request: MAKE-ACCOUNT"
+                            m))))
+    dispatch)
+  ```
+  -> Message-passing style.
+
