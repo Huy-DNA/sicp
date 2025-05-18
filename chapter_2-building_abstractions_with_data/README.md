@@ -5,7 +5,7 @@
 - Example: Rational numbers & the operation `add-rat` which computes the sum of two rationals
   - We can represent a rational number by 2 integers: a numerator and a denominator.
   - The operation `add-rat` would be implemented as 2 operations: One producing the numerator of the sum and one producing the denominator of the sum.
-  -> It would better if we could "glue together" a numerator and denominator to form a pair (*coumpound data object*).
+  -> It would be better if we could "glue together" a numerator and denominator to form a pair (*coumpound data object*).
   -> We can regard rational number as a single conceptual unit.
 
 - The use of *compound data* increases the modularity of programs:
@@ -140,11 +140,11 @@
   ```
     -------[ Programs that use rational numbers ]-------
             Rational numbers in problem domain
-    -------[ add-rat    sub-rat   ... ]-------
+    ------------[ add-rat    sub-rat   ... ]------------
         Rational numbers as numerators and denominators
-    -------[ make-rat   numer   denom ]-------
+    ------------[ make-rat   numer   denom ]-------
              Rational numbers as pairs
-    -------[ make-rat   numer   denom ]-------
+    -------------------[ ]-----------------------------
           However pairs as implemented
   ```
 
