@@ -104,3 +104,72 @@ One powerful design strategy: Base the structure of our programs on the structur
   ```
   -> Message-passing style.
 
+### The benefits of introducing assignment
+
+- Assume a procedure `rand-update` that has the property that if we start with a given number $x_1$ and form
+
+```scheme
+x2 = (rand-update x1)
+x3 = (rand-update x2)
+```
+then the sequence of values will have the desired statistical properties.
+
+- Using local state variable to implement `rand`:
+
+```
+(define rand (let ((x random-init))
+                (lambda ()
+                    (set! x (rand-update x))
+                    x)))
+```
+
+- Alternative scheme: Use `rand-update` directly -> Annoying as any part of the program has to remember the current value of `x`.
+
+- Monte Carlo method:
+  - Choose sample experiments at random from a large set.
+  - Estimate probabilities from tabulating the results of those experiments.
+  - Make deductions on the basis of those probabilities.
+- Estimate π: we perform a large number of experiments. In each experiment we choose two integers at random and perform a test to see if their GCD is 1. The fraction of times that the test is passed gives us our estimate of 6/π^2, and from this we obtain our approximation to π.
+- Monte Carlo:
+  ```scheme
+  (define (monte-carlo trials experiment)
+    (define (iter trials-remaining trials-passed)
+      (cond ((= trials-remaining 0)
+             (/ trials-passed trials))
+            ((experiment)
+             (iter (- trials-remaining 1)
+                   (+ trials-passed 1)))
+            (else
+             (iter (- trials-remaining 1)
+                   trials-passed))))
+    (iter trials 0))
+  ```
+- Estimate π using Cesaro's test:
+  ```scheme
+  (define (estimate-pi trials)
+    (sqrt (/ 6 (monte-carlo trials cesaro-test))))
+  (define (cesaro-test)
+    (= (gcd (rand) (rand)) 1))
+  ```
+- Using `rand-update` directly: Less modularity.
+  ```scheme
+  (define (estimate-pi trials)
+    (sqrt (/ 6 (random-gcd-test trials random-init))))
+  (define (random-gcd-test trials initial-x)
+    (define (iter trials-remaining trials-passed x)
+        (let ((x1 (rand-update x)))
+            (let ((x2 (rand-update x1)))
+                (cond ((= trials-remaining 0)
+                       (/ trials-passed trials))
+                      ((= (gcd x1 x2) 1)
+                       (iter (- trials-remaining 1)
+                             (+ trials-passed 1)
+                             x2))
+                      (else
+                        (iter (- trials-remaining 1)
+                              trials-passed
+                              x2))))))
+    (iter trials 0 initial-x))
+  ```
+  - The random number generator is leaking out: `estimate-pi` has to supply in an initial random number.
+- (?) By introducing assignment and the technique of hiding state in local variables, we are able to structure systems in a more modular fashion. (NOT CORRECT)
